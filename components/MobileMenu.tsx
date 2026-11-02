@@ -12,6 +12,8 @@ import { LINKS } from "@/lib/links";
 import { usePinTheme } from "@/lib/theme";
 import "./mobile-menu.css";
 import { lenisRef, scrollToElement } from "@/lib/lenis";
+import { SPONSOR_ENABLED } from "@/sponsor/config";
+import { SPONSOR_PLACE } from "@/sponsor/SponsorNavLink";
 
 /**
  * The site's menu on a phone.
@@ -36,6 +38,8 @@ const PLACES = [
   { label: "Components", href: "/#components", match: (p: string) => p.startsWith("/components") },
   { label: "Blocx", href: "/blocx", match: (p: string) => p.startsWith("/blocx") },
   { label: "Testimonials", href: "/#testimonials", match: (p: string) => p.startsWith("/testimonials") },
+  /* only while sponsoring is switched on (sponsor/config.ts) */
+  ...(SPONSOR_ENABLED ? [SPONSOR_PLACE] : []),
 ];
 
 const SUBMIT_URL = "https://tally.so/r/2EQY9e";

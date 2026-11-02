@@ -8,7 +8,9 @@ next-env.d.ts
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
-# secrets - the Supabase key and site URL live here, never in the repo
+# secrets - the Supabase key, the Dodo Payments keys and the site URL live
+# here, never in the repo (.env.example is the committed, empty template)
+.env
 .env*.local
 
 # vercel cli

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { animate, motion, useReducedMotion } from "motion/react";
 import { softSpring } from "@/lib/motion";
+import { enterBlocx } from "../BlocksLink";
 
 /**
  * The last cell on the shelf — Figma 422:9 (resting) and 422:20 (hovered).
@@ -22,9 +23,15 @@ export default function ViewAllCard({
   index,
   total,
   arrowAtRest = false,
+  library = "components",
+  as = "li",
 }: {
   index: number;
   total: number;
+  /** Which shelf it opens: the components, or Blocx — which is entered through its gate. */
+  library?: "components" | "blocx";
+  /** `div` when it is one face of a flipping cell, which then owns the entrance. */
+  as?: "li" | "div";
   /**
    * The landing's version (Figma 502:405): red at rest with the arrow already
    * in its corner. Pointed at, the arrow flies out through the top-right and
@@ -100,19 +107,30 @@ export default function ViewAllCard({
     });
   }
 
+  const Cell = as === "div" ? motion.div : motion.li;
+  const entrance =
+    as === "div" || reduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 28 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, amount: 0.3 },
+          transition: { ...softSpring, delay: index * 0.08 },
+        };
+
   return (
-    <motion.li
-      className="shelf__cell"
-      initial={reduced ? undefined : { opacity: 0, y: 28 }}
-      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ ...softSpring, delay: index * 0.08 }}
-    >
+    <Cell className="shelf__cell" {...entrance}>
       <Link
         ref={cardRef}
         className={arrowAtRest ? "viewall viewall--lit" : "viewall"}
-        href="/components"
-        aria-label={`View all ${total} components`}
+        href={library === "blocx" ? "/blocx" : "/components"}
+        aria-label={`View all ${total} ${library === "blocx" ? "blocx" : "components"}`}
+        onClick={(e) => {
+          /* Blocx is walked into through its gate, as from every other link to it */
+          if (library !== "blocx" || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          e.preventDefault();
+          enterBlocx();
+        }}
         onPointerEnter={(e) => e.pointerType === "mouse" && enter()}
         onPointerLeave={(e) => e.pointerType === "mouse" && leave()}
         onFocus={enter}
@@ -142,9 +160,9 @@ export default function ViewAllCard({
         </span>
 
         <span className="viewall__label" aria-hidden="true">
-          View all components
+          {library === "blocx" ? "View all blocx" : "View all components"}
         </span>
       </Link>
-    </motion.li>
+    </Cell>
   );
 }

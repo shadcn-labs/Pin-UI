@@ -102,7 +102,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: FAVICONS.light.themeColor,
+  /* the browser's bar in the default face — the no-flash script corrects it for a stored choice */
+  themeColor: FAVICONS[DEFAULT_THEME].themeColor,
   width: "device-width",
   initialScale: 1,
   /* the stage is exactly one viewport tall; let it sit under the notch */
@@ -132,6 +133,9 @@ const noFlash = `
   };
   set("pin-icon-svg", icons[theme].svg);
   set("pin-icon-png", icons[theme].png);
+  /* the phone's browser bar too, before it paints in the other colour */
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", icons[theme].themeColor);
 })();
 `;
 
@@ -143,7 +147,14 @@ export default function RootLayout({
   return (
     /* the theme attribute is written by the script below, before hydration,
        so React must not claim ownership of it */
-    <html lang="en" className={`${manrope.variable} ${scribble.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    /* rendered in the default (dark) face, so the HTML is dark even before — or without — the script */
+    <html
+      lang="en"
+      className={`${manrope.variable} ${scribble.variable}`}
+      data-pin-theme={DEFAULT_THEME}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head>
         {/*
           Neue Montreal is the design's typeface; Switzer is the closest freely
@@ -162,7 +173,7 @@ export default function RootLayout({
           id="pin-icon-svg"
           rel="icon"
           type="image/svg+xml"
-          href={FAVICONS.light.svg}
+          href={FAVICONS[DEFAULT_THEME].svg}
           suppressHydrationWarning
         />
         <link
@@ -170,7 +181,7 @@ export default function RootLayout({
           rel="icon"
           type="image/png"
           sizes="32x32"
-          href={FAVICONS.light.png}
+          href={FAVICONS[DEFAULT_THEME].png}
           suppressHydrationWarning
         />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />

@@ -25,15 +25,25 @@ export default function ComponentCard({
   entry,
   index,
   priority = false,
+  as: Tag = "li",
+  hidden = false,
 }: {
   entry: Entry;
   index: number;
   /** In the first row a page opens on: its still loads straight away, ahead of everything else. */
   priority?: boolean;
+  /**
+   * `div` when the card is one face of a cell rather than the cell itself —
+   * the landing's flipping shelf, whose list item holds a card on each side.
+   * That cell then owns the entrance, so the card does not rise on its own.
+   */
+  as?: "li" | "div";
+  /** Turned away (the back of a flipped cell): its clip stops, as if it had scrolled off. */
+  hidden?: boolean;
 }) {
   const reduced = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const cellRef = useRef<HTMLLIElement>(null);
+  const cellRef = useRef<HTMLElement>(null);
   const [near, setNear] = useState(false);
   /* on screen: at least a third of the preview is showing */
   const visible = useRef(false);
@@ -45,7 +55,7 @@ export default function ComponentCard({
       reduced ||
       document.hidden ||
       (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
-    if (visible.current && !still) {
+    if (visible.current && !still && !hidden) {
       if (video.paused) {
         void video.play().catch(() => {
           /* a browser that refuses to play silently is no reason to break the card */
@@ -54,7 +64,7 @@ export default function ComponentCard({
     } else if (!video.paused) {
       video.pause();
     }
-  }, [reduced]);
+  }, [reduced, hidden]);
 
   useEffect(() => {
     const cell = cellRef.current;
@@ -101,7 +111,11 @@ export default function ComponentCard({
      * on screen is painted at first paint rather than held hidden until
      * hydration. Cards side by side are staggered by their column.
      */
-    <li className="shelf__cell pin-reveal" ref={cellRef} style={{ "--reveal-i": index % 3 } as React.CSSProperties}>
+    <Tag
+      className={Tag === "li" ? "shelf__cell pin-reveal" : "shelf__cell"}
+      ref={cellRef as React.Ref<HTMLLIElement & HTMLDivElement>}
+      style={{ "--reveal-i": index % 3 } as React.CSSProperties}
+    >
       <Link className="card" href={`/components/${entry.slug}`}>
         {/* the recording's own field shows behind a clip zoomed out below 1 */}
         <span className="card__frame" style={{ background: entry.clipStage ?? entry.stage }}>
@@ -164,6 +178,6 @@ export default function ComponentCard({
           </span>
         </span>
       </Link>
-    </li>
+    </Tag>
   );
 }

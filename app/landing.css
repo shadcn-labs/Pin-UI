@@ -392,6 +392,202 @@
 
 /* the cards themselves are drawn in sections.css, shared with the library page */
 
+/* --- the flipping shelf — Figma 580:300 (Components) / 580:403 (Blocx) -------- */
+
+/*
+ * The heading sits on the grid's left edge with its rule under it: 40 on
+ * 1280 for the name, a 220 × 2 track with the white fill running along it.
+ */
+.landing .shelf__head--flip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.95em; /* the rule ~45 under the name's top, as drawn */
+  margin: 0 0 2.9em;
+}
+
+.shelf__switchTitle {
+  margin: 0;
+  font-size: 2.5em; /* 40 */
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.014em;
+  color: var(--sec-ink);
+  transition: color var(--pin-theme-fade) var(--pin-theme-ease);
+}
+
+.shelf__switch {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shelf__switch:focus-visible {
+  outline: 2px solid var(--sec-ink);
+  outline-offset: 0.2em;
+  border-radius: 0.1em;
+}
+
+/*
+ * The two names share one box, as faces of a drum turned on its horizontal
+ * axis: the one up rolls back and away over the top while the other comes
+ * up from underneath. The box is as wide as the longer name, so nothing
+ * beside it moves when the shorter one is showing.
+ */
+.shelf__names {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  text-align: left;
+  perspective: 30em;
+}
+
+.shelf__name {
+  grid-area: 1 / 1;
+  display: block;
+  justify-self: start;
+  padding-bottom: 0.08em; /* room for descenders inside the turning face */
+  backface-visibility: hidden;
+  transform-origin: 50% 50% -0.55em;
+  transform: rotateX(-90deg);
+  opacity: 0;
+  transition:
+    transform 0.75s cubic-bezier(0.65, 0, 0.25, 1),
+    opacity 0.45s ease;
+}
+
+.shelf__name[data-up] {
+  transform: rotateX(0deg);
+  opacity: 1;
+}
+
+/* the one leaving goes over the top, not back the way the other came */
+.shelf__name:not([data-up]) {
+  transform: rotateX(90deg);
+}
+
+/*
+ * The rule: a track the length of the drawn one, a weight heavier than the
+ * drawing's 2px so the fill reads as progress at a glance, and the fill that
+ * runs along it in the ink's full strength.
+ */
+.shelf__track {
+  position: relative;
+  display: block;
+  width: 13.75em; /* 220 */
+  height: 0.25em; /* 4 */
+  overflow: hidden;
+  border-radius: 1em;
+  background: color-mix(in srgb, var(--sec-ink) 18%, transparent);
+}
+
+.shelf__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--sec-ink);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  animation: shelf-fill var(--dwell, 8s) linear forwards;
+}
+
+@keyframes shelf-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/*
+ * Each cell is a card with two faces. The turn is a half-revolution about the
+ * vertical axis, always onward (the count of turns only grows), and the cells
+ * go one after another along the rows, so the shelf turns over as a wave.
+ */
+.shelf__flip {
+  display: flex;
+  perspective: 120em;
+}
+
+.shelf__flipper {
+  position: relative;
+  display: grid;
+  flex: 1;
+  transform-style: preserve-3d;
+  transform: rotateY(calc(var(--turns, 0) * 180deg));
+  transition: transform 0.95s cubic-bezier(0.65, 0, 0.25, 1) calc(var(--flip-i, 0) * 75ms);
+}
+
+.shelf__face {
+  grid-area: 1 / 1;
+  display: flex;
+  min-width: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.shelf__face--back {
+  transform: rotateY(180deg);
+}
+
+/* the card inside a face fills it, as it fills its cell on the library page */
+.shelf__face > .shelf__cell {
+  flex: 1;
+  min-width: 0;
+}
+
+/* a block's picture is the whole section, contained on its own background */
+.card__thumb {
+  object-fit: contain;
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* no turn and no roll: the faces cross-fade where they stand */
+  .shelf__flipper {
+    transform: none;
+    transition: none;
+  }
+
+  .shelf__face {
+    backface-visibility: visible;
+    transition: opacity 0.3s ease;
+  }
+
+  .shelf__face--back {
+    transform: none;
+  }
+
+  .shelf--flip[data-side="components"] .shelf__face--back,
+  .shelf--flip[data-side="blocx"] .shelf__face:not(.shelf__face--back) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .shelf__name,
+  .shelf__name:not([data-up]),
+  .shelf__name[data-up] {
+    transform: none;
+    transition: opacity 0.3s ease;
+  }
+}
+
+@media (max-width: 700px) {
+  .landing .shelf__head--flip {
+    margin-bottom: 2.2em;
+  }
+
+  .shelf__switchTitle {
+    font-size: 2.25em;
+  }
+}
+
 /* --- testimonials on the landing --------------------------------------------- */
 
 .landing .tq {
@@ -406,25 +602,6 @@
 .landing .tq,
 .landing .tq__title {
   transition: color var(--pin-theme-fade) var(--pin-theme-ease);
-}
-
-/* --- Lenis ------------------------------------------------------------------- */
-
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
 }
 
 /* --- narrower screens -------------------------------------------------------- */

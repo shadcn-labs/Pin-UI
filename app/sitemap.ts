@@ -1,3 +1,4 @@
+import { SPONSOR_ENABLED } from "@/sponsor/config";
 import type { MetadataRoute } from "next";
 import { LIBRARY } from "@/components/library/registry";
 import { BLOCKS } from "@/lib/blocks";
@@ -50,6 +51,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.85,
     },
+    /* only while sponsoring is switched on (sponsor/config.ts) */
+    ...(SPONSOR_ENABLED
+      ? [
+          {
+            url: `${SITE_URL}/sponsor`,
+            lastModified: now,
+            changeFrequency: "monthly" as const,
+            priority: 0.8,
+          },
+        ]
+      : []),
     {
       url: `${SITE_URL}/waitlist`,
       lastModified: now,

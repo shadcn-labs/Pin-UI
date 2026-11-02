@@ -1,0 +1,77 @@
+/* ===========================================================================
+   "(S) /" before the Pin UI lockup (LabsPrefix.tsx).
+   ---------------------------------------------------------------------------
+   Set in em of the wordmark beside it: the lab's mark stands a little over
+   the wordmark's cap height, the slash is the wordmark's own type, lighter.
+=========================================================================== */
+
+.labsx {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.36em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.labsx__link {
+  display: grid;
+  place-items: center;
+  color: inherit;
+  border-radius: 0.12em;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease;
+}
+
+.labsx__icon {
+  display: block;
+  width: auto;
+  height: 0.78em;
+}
+
+.labsx__slash {
+  font-weight: 300;
+  opacity: 0.55;
+  transform: translateY(-0.02em);
+}
+
+@media (hover: hover) {
+  .labsx__link:hover {
+    transform: translateY(-0.04em) scale(1.06);
+  }
+}
+
+.labsx__link:active {
+  transform: scale(0.94);
+}
+
+.labsx__link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 0.12em;
+}
+
+/* the size of each lockup's wordmark */
+.hero__brand .labsx {
+  font-size: 2.25em; /* 36 */
+}
+
+.lib__brand .labsx {
+  font-size: 1.75em;
+}
+
+.wbnav__lockup .labsx {
+  font-size: 2.111em;
+}
+
+@media (max-width: 700px) {
+  .hero__brand .labsx {
+    font-size: 1.875em; /* 30 */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .labsx__link {
+    transition: none;
+  }
+}

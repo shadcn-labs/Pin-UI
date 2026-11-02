@@ -5,6 +5,8 @@ import HeroSection from "./HeroSection";
 import SiteRail from "./SiteRail";
 import UniqueSection from "./UniqueSection";
 import LazyHydrate from "./LazyHydrate";
+import SponsorSection from "@/sponsor/landing/SponsorSection";
+import { SPONSOR_ENABLED } from "@/sponsor/config";
 
 /*
  * What sits below the first screen is its own chunk. It is still rendered on
@@ -36,6 +38,8 @@ export default function DemoLanding() {
       <LazyHydrate>
         <Testimonials />
       </LazyHydrate>
+      {/* parked until sponsor/config.ts switches it on */}
+      {SPONSOR_ENABLED && <SponsorSection />}
       <LazyHydrate>
         <SiteFooter />
       </LazyHydrate>

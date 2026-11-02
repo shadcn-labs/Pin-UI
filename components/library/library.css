@@ -82,11 +82,24 @@
   background: var(--lib-paper);
   /* the hairline only arrives once there is something passing under it */
   box-shadow: 0 1px 0 transparent;
-  transition: box-shadow 0.25s ease;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
 }
 
 .lib__bar[data-scrolled="true"] {
   box-shadow: 0 1px 0 var(--lib-faint);
+}
+
+/* stepped aside for the section under it (PageBar's hideOver): up and out, and out of the tab order once gone */
+.lib__bar[data-away] {
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s 0.45s;
 }
 
 .lib__brand {

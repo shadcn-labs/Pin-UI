@@ -5,6 +5,7 @@ import BlocksLink from "@/components/BlocksLink";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import ThemeMark from "../ThemeMark";
+import SponsorNavLink from "@/sponsor/SponsorNavLink";
 import MobileMenu from "../MobileMenu";
 import { LINKS } from "@/lib/links";
 import { softSpring } from "@/lib/motion";
@@ -99,6 +100,7 @@ export default function SiteRail() {
                 <a className="rail__link" href="#testimonials">
                   Testimonials
                 </a>
+                <SponsorNavLink className="rail__link" />
               </>
             ) : (
               <>
@@ -112,6 +114,7 @@ export default function SiteRail() {
                 <Link className="rail__link" href="/#testimonials">
                   Testimonials
                 </Link>
+                <SponsorNavLink className="rail__link" />
               </>
             )}
           </div>

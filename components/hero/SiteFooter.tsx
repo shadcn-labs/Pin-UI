@@ -1,5 +1,6 @@
 "use client";
 
+import SponsorNavLink from "@/sponsor/SponsorNavLink";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import BlocksLink from "@/components/BlocksLink";
@@ -222,6 +223,7 @@ export default function SiteFooter() {
             <Link className="pfoot__navLink" href="/#testimonials">
               Testimonials
             </Link>
+            <SponsorNavLink className="pfoot__navLink" />
           </nav>
 
           <span className="pfoot__rule" aria-hidden="true" />

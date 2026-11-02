@@ -1,18 +1,20 @@
 "use client";
 
 import BlocksLink from "../BlocksLink";
+import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import HeroWall from "./HeroWall";
 import PinterestPeek from "./PinterestPeek";
 import GitHubStars from "./GitHubStars";
 import ThemeMark from "../ThemeMark";
+import LabsPrefix from "../LabsPrefix";
+import SponsorNavLink from "@/sponsor/SponsorNavLink";
 import MobileMenu from "../MobileMenu";
 import ThemeHint from "../ThemeHint";
 import { softSpring } from "@/lib/motion";
 import { useRailed } from "./useRailed";
 
 /** Where the "submit a design" line goes: the request form. */
-const SUBMIT_URL = "https://tally.so/r/2EQY9e";
 
 /**
  * The landing hero — Figma 501:915 (light) and 502:118 (dark).
@@ -74,6 +76,7 @@ export default function HeroSection() {
               transition={instant ? { duration: 0 } : softSpring}
             >
               <div className="hero__brand pin-rise" style={rise(0.05)}>
+                <LabsPrefix />
                 {/* the mark is the switch; the wordmark beside it is plain type */}
                 <ThemeMark
                   buttonClassName="hero__markButton"
@@ -97,6 +100,7 @@ export default function HeroSection() {
                 <a className="hero__navLink" href="#testimonials">
                   Testimonials
                 </a>
+                <SponsorNavLink className="hero__navLink" />
               </nav>
 
               {/* the octocat lifts away on hover and the star count rises into its place */}
@@ -111,9 +115,9 @@ export default function HeroSection() {
         </AnimatePresence>
 
         <div className="hero__center">
-          <a className="hero__submit pin-rise" href={SUBMIT_URL} target="_blank" rel="noopener noreferrer" style={rise(0.2)}>
-            Want to submit a design?? <span aria-hidden="true">→</span>
-          </a>
+          <Link className="hero__submit pin-rise" href="/shadcn-labs" style={rise(0.2)}>
+            Part of Shadcn Labs <span aria-hidden="true">→</span>
+          </Link>
 
           {/*
             The claim rises out of a clipping mask a line at a time, so the

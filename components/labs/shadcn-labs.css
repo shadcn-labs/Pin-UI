@@ -1,0 +1,701 @@
+/* ===========================================================================
+   Pin UI × Shadcn Labs — Figma 596:131, at /shadcn-labs.
+   ---------------------------------------------------------------------------
+   A dark page with a light face: the site's bar, a red dithered banner,
+   the announcement, a strip of what Shadcn Labs consists of, and the shard
+   ring at the foot. Every size is the design's px over 16, in `em`, off one
+   size that grows with the window along a straight line — 16px at 1280 (the
+   design), relatively larger on a smaller screen, capped on a very large one
+   — so nothing jumps at a breakpoint. The small print is set a step larger
+   than drawn so it reads comfortably at arm's length.
+=========================================================================== */
+
+/*
+ * Two faces, thrown by the mark in the bar like every other page. Crimson
+ * (and no theme yet) is the design: black paper, white type. Light is the
+ * same page on white: near-black type, the brand red as it is, the bar red on
+ * white as the library's. The red banner reads the same in both. Every colour
+ * below is a token, so the switch is one fade.
+ */
+.site.lib-page.labs-page {
+  --lib-ink: #f7f7f7;
+  --lib-dim: rgb(255 255 255 / 0.6);
+  --lib-faint: rgb(255 255 255 / 0.14);
+  --lib-accent: #e60024;
+  --lib-accent-ink: #ff1f3d;
+  --lib-paper: #0a0a0a;
+  --lib-chrome: #ffffff;
+  --pin-mark: #ffffff;
+  --pin-mark-star: #e60024;
+
+  --labs-red: #e60024;
+  --labs-paper: #0a0a0a;
+  /* the paper as channels, for the fades over it */
+  --labs-scrim: 10 10 10;
+  --labs-ink: #ffffff;
+  --labs-dim: rgb(255 255 255 / 0.6);
+  /* the strip's names stepping back while another is in hand */
+  --labs-mute: rgb(255 255 255 / 0.32);
+  --labs-rule: rgb(255 255 255 / 0.32);
+  --labs-wash: rgb(255 255 255 / 0.05);
+  /* the disclaimer's red: a touch brighter on black to read as small type */
+  --labs-note: #ff0028;
+  --labs-note-hover: #ff5a70;
+
+  background: var(--labs-paper);
+  color: var(--labs-ink);
+  transition:
+    background-color var(--pin-theme-fade, 0.5s) var(--pin-theme-ease, ease),
+    color var(--pin-theme-fade, 0.5s) var(--pin-theme-ease, ease),
+    opacity 0.4s ease;
+}
+
+/* the crimson rule in library.css sets pure black paper; this page keeps the design's #0a0a0a */
+:root[data-pin-theme="crimson"] .site.lib-page.labs-page {
+  --lib-paper: #0a0a0a;
+}
+
+:root[data-pin-theme="light"] .site.lib-page.labs-page {
+  --lib-ink: #0a0a0a;
+  --lib-dim: rgb(10 10 10 / 0.56);
+  --lib-faint: rgb(10 10 10 / 0.12);
+  --lib-accent-ink: #e60024;
+  --lib-paper: #ffffff;
+  --lib-chrome: #e60024;
+  --pin-mark: #e60024;
+  --pin-mark-star: #ffffff;
+
+  --labs-paper: #ffffff;
+  --labs-scrim: 255 255 255;
+  --labs-ink: #0a0a0a;
+  --labs-dim: rgb(10 10 10 / 0.62);
+  --labs-mute: rgb(10 10 10 / 0.3);
+  --labs-rule: rgb(10 10 10 / 0.16);
+  --labs-wash: rgb(10 10 10 / 0.04);
+  /* the brand red passes as small type on white as it is */
+  --labs-note: #e60024;
+  --labs-note-hover: #a3001a;
+}
+
+/*
+ * The arrival (LabsIntro.tsx). "cover": an in-app arrival, hidden for the
+ * frame it takes to land on the foot. "hold": at the foot, the bar put out of
+ * the way at once rather than slid; through the glide it is already stepped
+ * aside for the ring, and slides back in as the ring drops away.
+ */
+html[data-labs-intro="cover"] .site.lib-page.labs-page {
+  opacity: 0;
+  transition: none;
+}
+
+html[data-labs-intro="cover"] .labs-page .lib__bar,
+html[data-labs-intro="hold"] .labs-page .lib__bar {
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition: none;
+}
+
+.labs {
+  /* 12.6px at 640 wide, 16px at 1280 (the design), 22.8px at 2560 */
+  font-size: clamp(10px, calc(9.16px + 0.534vw), 30px);
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow-x: clip;
+}
+
+.labs__red {
+  color: var(--labs-red);
+}
+
+/* only for assistive tech */
+.labs__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- the lockup, at both of its sizes -------------------------------------- */
+
+.labs__lockup {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5em; /* ~40 between the three, as drawn */
+  max-width: 100%;
+  margin: 0;
+  padding: 0 1rem;
+  font-weight: 500;
+}
+
+.labs__pin {
+  display: flex;
+  align-items: center;
+  gap: 0.766em; /* 12.25 */
+}
+
+.labs__pinMark {
+  display: block;
+  width: 2.909em; /* 46.55 */
+  height: auto;
+}
+
+.labs__pinWord {
+  font-size: 2.756em; /* 44.1 */
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.labs__x {
+  display: block;
+  width: 3.85em; /* 61.6 */
+  height: auto;
+}
+
+.labs__shadcn {
+  display: block;
+  width: 24.01em; /* 384.16 */
+  height: auto;
+}
+
+/* the banner's lockup is the ring's at 72% — 500 across in the 1280 frame, as drawn */
+.labs__lockup--banner {
+  font-size: 0.7227em;
+}
+
+/* --- the banner — brand red under the design's Bayer 16 × 16 dither --------- */
+
+/*
+ * The design draws the bar red and runs a dither shader over it (6 levels,
+ * 2px cells). On a flat red that shader's output is one repeating 32px tile,
+ * so it is computed once, with the shader's own matrix and quantiser, and
+ * tiled here — pixel for pixel what the shader paints, without asking every
+ * visitor's GPU to draw it.
+ */
+.labs__banner {
+  /* white on the red in both faces */
+  --pin-mark: #ffffff;
+  --pin-mark-star: #e60024;
+  position: relative;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  height: 6.25em; /* 100 */
+  overflow: hidden;
+  background: var(--labs-red) url("/labs/banner-dither.png") 0 0 / 32px 32px repeat;
+  image-rendering: pixelated;
+}
+
+/* the same dither, moving (DitherBanner.tsx) — over the still once its first frame is drawn */
+.labs__dither {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.labs__dither[data-ready] {
+  opacity: 1;
+}
+
+/* --- the announcement -------------------------------------------------------- */
+
+.labs__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.75em 1.25rem 0; /* 44 under the banner */
+  text-align: center;
+}
+
+.labs__title {
+  margin: 0;
+  font-size: 3.375em; /* 54 */
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.0185em;
+}
+
+/* the name it joins takes the second line to itself, as drawn */
+.labs__titleEnd {
+  display: block;
+}
+
+.labs__lead,
+.labs__note {
+  margin: 0;
+  font-size: 0.875em; /* 12 drawn, set at 14 to read */
+  line-height: 1.45;
+}
+
+/* the sentence in two even lines — wide enough that it never needs a third */
+.labs__lead {
+  max-width: 36em;
+  margin-top: 1.6em;
+  color: var(--labs-dim);
+  text-wrap: balance;
+}
+
+/* the disclaimer on one line */
+.labs__note {
+  max-width: 100%;
+  margin-top: 1.1em;
+  color: var(--labs-note);
+  white-space: nowrap;
+}
+
+.labs__lead a,
+.labs__note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s ease;
+}
+
+.labs__lead a:hover {
+  color: var(--labs-ink);
+}
+
+.labs__note a:hover {
+  color: var(--labs-note-hover);
+}
+
+/* the three links: an icon and a name each, on one line, a little apart */
+.labs__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6em 2.4em;
+  margin: 3.4em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Each link: icon, name, arrow. The name sits on a faint rule; on hover the
+ * link brightens to white, a red rule draws across under the name from the
+ * left, and the arrow steps out up and to the right — where the link goes.
+ */
+.labs__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.35em 0.15em;
+  color: var(--labs-dim);
+  font-size: 0.78em; /* 9.6 drawn, set at 12.5 */
+  line-height: 1.3;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.labs__linkText {
+  padding-bottom: 0.18em;
+  background:
+    linear-gradient(var(--labs-red), var(--labs-red)) 0 100% / 0% 1px no-repeat,
+    linear-gradient(var(--labs-rule), var(--labs-rule)) 0 100% / 100% 1px no-repeat;
+  transition: background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.labs__linkArrow {
+  display: block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  margin-left: -0.1em;
+  opacity: 0.7;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease,
+    color 0.25s ease;
+}
+
+.labs__link:hover,
+.labs__link:focus-visible {
+  color: var(--labs-ink);
+}
+
+.labs__link:hover .labs__linkText,
+.labs__link:focus-visible .labs__linkText {
+  background-size:
+    100% 1px,
+    100% 1px;
+}
+
+.labs__link:hover .labs__linkArrow,
+.labs__link:focus-visible .labs__linkArrow {
+  color: var(--labs-note);
+  opacity: 1;
+  transform: translate(0.14em, -0.14em);
+}
+
+.labs__links a:focus-visible,
+.labs__lead a:focus-visible,
+.labs__note a:focus-visible {
+  outline: 2px solid var(--labs-red);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.labs__linkIcon {
+  display: block;
+  flex: none;
+  width: 1.35em; /* 16 at 12 */
+  height: 1.35em;
+}
+
+/* --- what Shadcn Labs consists of -------------------------------------------- */
+
+.labs__members {
+  padding-top: 5.75em; /* ~92 under the links */
+}
+
+.labs__subtitle {
+  margin: 0 0 1.25em;
+  padding: 0 1.25rem;
+  text-align: center;
+  font-size: 2em; /* 32 */
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.031em;
+}
+
+/*
+ * The strip: the lab's projects between hairlines, edge to edge of the
+ * screen, drifting left (ShadcnLabs.tsx drives it). Every name rests dim;
+ * the one under the pointer lights white with a red rule drawn under it and
+ * an arrow in its corner, and the rest step back further, so the one in hand
+ * is unmistakable. Progressive blur at both ends.
+ */
+.labs__strip {
+  --edge: clamp(3.5em, 15vw, 15em);
+  position: relative;
+  height: 3.3em; /* 52.8 */
+  overflow: hidden;
+  border-block: 1px solid var(--labs-rule);
+}
+
+.labs__track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  will-change: transform;
+}
+
+.labs__member {
+  flex: none;
+  height: 100%;
+  border-right: 1px solid var(--labs-rule);
+}
+
+.labs__cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 0 0.95em;
+  color: var(--labs-dim);
+  font-size: 1.5em; /* 24 */
+  font-weight: 500;
+  letter-spacing: -0.0265em;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+/* the red rule under the name in hand — drawn out from the middle */
+.labs__cell::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--labs-red);
+  transform: scaleX(0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.labs__cellArrow {
+  position: absolute;
+  top: 0.4em;
+  right: 0.35em;
+  width: 0.5em;
+  height: 0.5em;
+  color: var(--labs-note);
+  opacity: 0;
+  transform: translate(-0.12em, 0.12em);
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* the pointer on the strip: everything steps back… */
+.labs__strip:hover .labs__cell {
+  color: var(--labs-mute);
+}
+
+/* …and the name in hand lights */
+.labs__strip .labs__cell:hover,
+.labs__strip .labs__cell:focus-visible {
+  color: var(--labs-ink);
+  background-color: var(--labs-wash);
+}
+
+.labs__cell:hover::after,
+.labs__cell:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.labs__cell:hover .labs__cellArrow,
+.labs__cell:focus-visible .labs__cellArrow {
+  opacity: 1;
+  transform: none;
+}
+
+.labs__cell:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--labs-red);
+}
+
+/*
+ * The progressive blur at each end. Four layers, each blurring twice as hard
+ * as the last and reaching half as far in, so the blur deepens smoothly
+ * towards the screen's edge — over a fade into the page, so the names
+ * dissolve rather than hit a wall. The end side is the start side mirrored.
+ */
+.labs__edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: var(--edge);
+  pointer-events: none;
+  background: linear-gradient(to right, var(--labs-paper), rgb(var(--labs-scrim) / 0.6) 30%, transparent);
+}
+
+.labs__edge--end {
+  right: 0;
+  left: auto;
+  transform: scaleX(-1);
+}
+
+.labs__edge i {
+  position: absolute;
+  inset: 0;
+}
+
+.labs__edge i:nth-child(1) {
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 40%);
+  mask-image: linear-gradient(to left, transparent, #000 40%);
+}
+
+.labs__edge i:nth-child(2) {
+  -webkit-backdrop-filter: blur(2.5px);
+  backdrop-filter: blur(2.5px);
+  -webkit-mask-image: linear-gradient(to left, transparent 30%, #000 60%);
+  mask-image: linear-gradient(to left, transparent 30%, #000 60%);
+}
+
+.labs__edge i:nth-child(3) {
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  -webkit-mask-image: linear-gradient(to left, transparent 55%, #000 80%);
+  mask-image: linear-gradient(to left, transparent 55%, #000 80%);
+}
+
+.labs__edge i:nth-child(4) {
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  -webkit-mask-image: linear-gradient(to left, transparent 75%, #000);
+  mask-image: linear-gradient(to left, transparent 75%, #000);
+}
+
+/* --- the ring ------------------------------------------------------------------- */
+
+/*
+ * The shard ring, a screen tall at the foot of the page, with the lockup in
+ * its eye. A soft dark pool sits under the lockup so the words stay legible
+ * when a shard drifts behind them.
+ */
+.labs__ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: max(100svh, 34em);
+  margin-top: 6.5em; /* ~106 under the strip */
+  overflow: hidden;
+}
+
+.labs__ring::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: min(60em, 110vw);
+  height: min(24em, 60%);
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, rgb(var(--labs-scrim) / 0.72), rgb(var(--labs-scrim) / 0.35) 55%, transparent);
+  pointer-events: none;
+}
+
+.labs__field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* the design's still of the ring — shown only when the live field can't run */
+.labs__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.labs__ring[data-still] .labs__still {
+  opacity: 1;
+}
+
+/* the still is drawn on black: on white, turned over — the paper goes white, the shards keep their red */
+:root[data-pin-theme="light"] .labs__still {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* the cross and the Shadcn Labs wordmark are white artwork: in ink on white */
+.labs__lockup--ring .labs__x,
+.labs__lockup--ring .labs__shadcn {
+  transition: filter var(--pin-theme-fade, 0.5s) var(--pin-theme-ease, ease);
+}
+
+:root[data-pin-theme="light"] .labs__lockup--ring .labs__x,
+:root[data-pin-theme="light"] .labs__lockup--ring .labs__shadcn {
+  filter: brightness(0);
+}
+
+/* the field is drawn behind; a click on the words still reaches it */
+.labs__lockup--ring {
+  pointer-events: none;
+}
+
+/* --- motion ---------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .labs__cell,
+  .labs__cell::after,
+  .labs__cellArrow {
+    transition: none;
+  }
+}
+
+/* --- narrower screens ------------------------------------------------------------- */
+
+/*
+ * A phone held upright: the lockups stack — Pin UI, the cross, Shadcn Labs —
+ * the headline steps down, and the strip's cells get a little smaller.
+ */
+@media (max-width: 640px) {
+  .labs {
+    font-size: clamp(10px, 3.5vw, 17px);
+  }
+
+  .labs__banner {
+    height: auto;
+    padding: 1.6em 0;
+  }
+
+  .labs__lockup--banner {
+    font-size: 0.62em;
+    gap: 2em;
+  }
+
+  .labs__lockup--ring {
+    flex-direction: column;
+    gap: 1.4em;
+  }
+
+  .labs__lockup--ring .labs__pinMark {
+    width: 2.6em;
+  }
+
+  .labs__lockup--ring .labs__pinWord {
+    font-size: 2.5em;
+  }
+
+  .labs__lockup--ring .labs__x {
+    width: 2.5em;
+  }
+
+  .labs__lockup--ring .labs__shadcn {
+    width: min(19em, 80vw);
+  }
+
+  .labs__ring::after {
+    width: min(28em, 120vw);
+    height: min(30em, 70%);
+  }
+
+  .labs__title {
+    font-size: 2.35em;
+  }
+
+  .labs__lead,
+  .labs__note {
+    font-size: 0.95em;
+  }
+
+  .labs__links {
+    gap: 0.9em 1.6em;
+  }
+
+  .labs__links a {
+    font-size: 0.86em;
+  }
+
+  .labs__members {
+    padding-top: 4.5em;
+  }
+
+  .labs__subtitle {
+    font-size: 1.7em;
+  }
+
+  .labs__cell {
+    font-size: 1.35em;
+  }
+
+  .labs__ring {
+    margin-top: 4.5em;
+  }
+}
+
+/* the banner's lockup on the narrowest phones: a size down again, so it holds one line */
+@media (max-width: 380px) {
+  .labs__lockup--banner {
+    font-size: 0.54em;
+    gap: 1.6em;
+  }
+}

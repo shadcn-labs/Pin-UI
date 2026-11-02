@@ -1,0 +1,424 @@
+/* ===========================================================================
+   /sponsor — "Back the Vision." (Figma 562:43).
+   ---------------------------------------------------------------------------
+   The design's px over 16, in `em` off `.site`, like the rest of the site.
+   The dark face is the drawing; the light face keeps Diamond red and turns
+   the charcoal plans to a pale card with black ink and a black button.
+=========================================================================== */
+
+.site.sp-page {
+  --sp-card: #1f1f1f;
+  --sp-card-edge: #444444;
+  --sp-card-ink: #ffffff;
+  --sp-card-note: rgb(255 255 255 / 0.6);
+  --sp-rule: rgb(255 255 255 / 0.64);
+  --sp-cta: #ffffff;
+  --sp-cta-ink: #000000;
+  --sp-lead: rgb(255 255 255 / 0.8);
+}
+
+:root:not([data-pin-theme="crimson"]) .site.sp-page {
+  --sp-card: #f4f4f4;
+  --sp-card-edge: #e2e2e2;
+  --sp-card-ink: #0a0a0a;
+  --sp-card-note: rgb(10 10 10 / 0.56);
+  --sp-rule: rgb(10 10 10 / 0.24);
+  --sp-cta: #0a0a0a;
+  --sp-cta-ink: #ffffff;
+  --sp-lead: rgb(10 10 10 / 0.72);
+}
+
+/* the heading and the plans sit as one block in the middle of the first screen */
+.sp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100dvh - 5.6em);
+  padding: 3.5em 1.5em 7em;
+}
+
+/*
+ * The bar on this page sits a step lower than the edge of the window — a
+ * breath of paper above it, so it reads as placed rather than pinned to the
+ * top. Still sticky; the extra room scrolls under it with the page.
+ */
+.sp-page .lib__bar {
+  height: 5.6em;
+  padding-top: 1em;
+}
+
+/* --- the heading ------------------------------------------------------------ */
+
+.sp__head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75em; /* 12 */
+  margin: 0 auto 4em;
+  text-align: center;
+}
+
+.sp__title {
+  margin: 0;
+  color: var(--lib-ink);
+  font-size: 4.25em; /* 54 drawn, opened up to the site's page titles */
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.sp__accent {
+  color: #e60024;
+}
+
+.sp__lead {
+  max-width: 24em;
+  margin: 0;
+  color: var(--sp-lead);
+  font-size: 1.0625em; /* 17 */
+  line-height: 1.4;
+}
+
+/* why the checkout did not open, when the route sends someone back */
+.sp__notice {
+  max-width: 36em;
+  margin: -2em auto 2.5em;
+  padding: 0.85em 1.2em;
+  border: 1px solid rgb(230 0 36 / 0.45);
+  border-radius: 0.75em;
+  background: rgb(230 0 36 / 0.1);
+  color: var(--lib-ink);
+  font-size: 0.95em;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.sp__notice a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* --- the plans --------------------------------------------------------------- */
+
+.sp__plans {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 22.5em)); /* 360 */
+  justify-content: center;
+  gap: 1.5em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* the drawn cards, a size up, so three fill the measure as they fill the frame */
+  font-size: 1.12em;
+}
+
+.sp__plan {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  /* 440 drawn; a touch taller, so the list breathes above the button */
+  min-height: 30.5em;
+  padding: 1.45em 1.45em 1.2em; /* 23.2 · 19.2 under the button */
+  overflow: hidden;
+  border: 0.05em solid var(--sp-card-edge);
+  border-radius: 1.5em; /* 24 */
+  background: var(--sp-card);
+  color: var(--sp-card-ink);
+  scroll-margin-top: 6em;
+  transition:
+    background-color var(--pin-theme-fade) var(--pin-theme-ease),
+    border-color var(--pin-theme-fade) var(--pin-theme-ease),
+    color var(--pin-theme-fade) var(--pin-theme-ease);
+}
+
+/*
+ * Diamond: the brand's red, deepest at the top and running down into blush —
+ * sampled off the drawn card, whose blurred bands this one gradient stands for.
+ */
+.sp__plan--diamond {
+  --sp-card-ink: #ffffff;
+  --sp-card-note: rgb(255 255 255 / 0.72);
+  --sp-rule: rgb(255 255 255 / 0.64);
+  --sp-cta: #ffffff;
+  --sp-cta-ink: #000000;
+  border-color: #ff98a8;
+  background: linear-gradient(
+    180deg,
+    #ec001c 0%,
+    #f00316 10%,
+    #f4141f 20%,
+    #f1353f 30%,
+    #f04c55 40%,
+    #f2616b 50%,
+    #f46e78 60%,
+    #f47d86 70%,
+    #f18791 80%,
+    #f3939c 90%,
+    #f598a2 100%
+  );
+}
+
+/* the plans stay put under the pointer; the glow under the button is the only answer to a hover */
+
+/* the red glow under Gold's and Supporter's buttons: 366 wide, sunk 70.8 below the floor */
+.sp__glow {
+  position: absolute;
+  z-index: -1;
+  bottom: -4.425em;
+  left: 50%;
+  width: 22.875em;
+  height: auto;
+  pointer-events: none;
+  /*
+   * Kept out of sight until the plan is pointed at: it waits a little below
+   * the floor, faded out and drawn in, then swells up into place and lights
+   * — and sinks back out the same way when the pointer leaves.
+   */
+  opacity: 0;
+  transform: translate(-50%, 1.5em) scaleX(0.7);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+@media (hover: hover) {
+  .sp__plan:hover .sp__glow {
+    opacity: 1;
+    transform: translate(-50%, 0) scaleX(1);
+  }
+}
+
+/* the keyboard sees it too, when the button inside the plan has focus */
+.sp__plan:focus-within .sp__glow {
+  opacity: 1;
+  transform: translate(-50%, 0) scaleX(1);
+}
+
+/* the name and the price: a fixed band, so the rule lands 156 down on every plan, as drawn */
+.sp__top {
+  height: 9.3em; /* the rule a third of the way down, where it is drawn */
+}
+
+.sp__name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0;
+  font-size: 1.125em; /* 18 */
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.sp__note {
+  color: var(--sp-card-note);
+  font-size: 0.667em; /* 12 */
+  font-weight: 400;
+}
+
+.sp__big {
+  display: flex;
+  align-items: baseline;
+  gap: 0.36em;
+  margin: 0.2em 0 0;
+  font-size: 4.05em; /* 64.8 */
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.sp__big--word {
+  font-size: 3.375em; /* 54 */
+  letter-spacing: -0.02em;
+}
+
+.sp__per {
+  font-size: 0.26em; /* 16.8 */
+  letter-spacing: 0;
+}
+
+.sp__rule {
+  flex: none;
+  height: 0;
+  margin: 0;
+  border: 0;
+  border-top: 0.025em solid var(--sp-rule);
+}
+
+.sp__perks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.72em; /* 27 a row, as drawn */
+  margin: 3.4em 0 2.5em; /* the list under the rule, in the drawn proportion */
+  padding: 0;
+  list-style: none;
+  font-size: 0.875em; /* 14 */
+  line-height: 1.25;
+}
+
+.sp__perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3em;
+}
+
+.sp__check {
+  flex: none;
+  width: 1.143em; /* 16 at 14 */
+  height: 1.143em;
+  margin-top: 0.03em;
+}
+
+/* the button sits in a form of its own, pushed to the foot of the plan */
+.sp__form {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.sp__cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3em; /* 54 at 18 */
+  margin: 0 -0.18em; /* 320 wide inside a 360 card */
+  padding: 0 1em;
+  border: 0;
+  border-radius: 100em;
+  background: var(--sp-cta);
+  color: var(--sp-cta-ink);
+  font: inherit;
+  font-size: 1.125em; /* 18 */
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition:
+    scale 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s ease,
+    opacity 0.2s ease,
+    background-color var(--pin-theme-fade) var(--pin-theme-ease),
+    color var(--pin-theme-fade) var(--pin-theme-ease);
+}
+
+/* on its way to the checkout: dimmed and still, so it reads as already pressed */
+.sp__cta[data-pending] {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+@media (hover: hover) {
+  .sp__cta:hover {
+    box-shadow: 0 0.4em 1.2em -0.4em rgb(0 0 0 / 0.5);
+  }
+}
+
+.sp__cta:active {
+  scale: 0.98;
+}
+
+.sp__cta:focus-visible {
+  outline: 2px solid #e60024;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp__plan,
+  .sp__cta {
+    transition: none;
+  }
+
+  /* the glow still comes and goes, as a plain fade */
+  .sp__glow,
+  .sp__plan:hover .sp__glow,
+  .sp__plan:focus-within .sp__glow {
+    transform: translate(-50%, 0);
+    transition: opacity 0.2s linear;
+  }
+}
+
+/* --- narrower screens -------------------------------------------------------- */
+
+/* two plans a row, the third centred under them, once three no longer fit */
+@media (max-width: 1180px) {
+  .sp__plans {
+    grid-template-columns: repeat(2, minmax(0, 22.5em));
+  }
+
+  .sp__plan--supporter {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+    max-width: 22.5em;
+  }
+}
+
+@media (max-width: 700px) {
+  .sp-page .lib__bar {
+    height: 5em;
+    padding-top: 0.8em;
+  }
+}
+
+@media (max-width: 760px) {
+  .sp {
+    padding: 3em 1em 6em;
+  }
+
+  .sp__title {
+    font-size: 3.25em;
+  }
+
+  .sp__head {
+    margin-bottom: 2.75em;
+  }
+
+  /* one plan a row, the full column wide */
+  .sp__plans {
+    grid-template-columns: minmax(0, 26em);
+    font-size: 1em;
+  }
+
+  .sp__plan--supporter {
+    grid-column: auto;
+    max-width: none;
+  }
+
+}
+
+/* --- /sponsor/thanks ------------------------------------------------------ */
+
+.sp--thanks .sp__lead {
+  max-width: 28em;
+}
+
+.sp__thanksActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1em;
+  margin-top: 1.5em;
+  --sp-cta: var(--lib-ink);
+  --sp-cta-ink: var(--lib-paper);
+}
+
+.sp__thanksActions .sp__cta {
+  width: 15em;
+  margin: 0;
+}
+
+.sp__thanksMail {
+  color: var(--sp-lead);
+  font-size: 0.9em;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
