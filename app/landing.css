@@ -424,8 +424,10 @@
 /* a phone: the badge a step smaller, so it sits above a two-line claim without crowding it */
 @media (max-width: 700px) {
   .hero__labs {
-    margin-bottom: 1.1em;
-    font-size: 0.875em;
+    /* the claim's lines are clipped boxes taller than their type: clear them */
+    margin-bottom: 1.5em;
+    /* never under 12.5px, however small the phone's base size gets */
+    font-size: max(0.875em, 12.5px);
   }
 }
 
