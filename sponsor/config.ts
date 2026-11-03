@@ -15,4 +15,4 @@
  * parked build ships none of it switched on by accident, and the change is
  * one line in review. See README.md for what lives where.
  */
-export const SPONSOR_ENABLED: boolean = false;
+export const SPONSOR_ENABLED: boolean = true;

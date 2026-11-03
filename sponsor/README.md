@@ -8,8 +8,8 @@ Everything for sponsoring Pin UI lives in this folder: the landing-page section,
 
 | Value | What happens |
 | --- | --- |
-| `false` (now) | Parked. Nothing sponsor-related shows anywhere: no section on the landing page, no "Sponsor" link in any navbar, footer or phone menu, and `/sponsor`, `/sponsor/thanks`, `/api/sponsor/checkout` and `/api/webhooks/dodo` all answer 404. `/sponsor` is left out of the sitemap. |
-| `true` | Live everywhere, exactly as before. |
+| `false` | Parked. Nothing sponsor-related shows anywhere: no section on the landing page, no "Sponsor" link in any navbar, footer or phone menu, and `/sponsor`, `/sponsor/thanks`, `/api/sponsor/checkout` and `/api/webhooks/dodo` all answer 404. `/sponsor` is left out of the sitemap. |
+| `true` (now) | Live everywhere, exactly as before. |
 
 Turning it on is a one-line change. After that, `/sponsor` takes payments as soon as the Dodo variables in `.env.local` (and on Vercel) are set. See `.env.example`.
 
