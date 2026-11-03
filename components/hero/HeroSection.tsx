@@ -7,7 +7,7 @@ import HeroWall from "./HeroWall";
 import PinterestPeek from "./PinterestPeek";
 import GitHubStars from "./GitHubStars";
 import ThemeMark from "../ThemeMark";
-import LabsPrefix from "../LabsPrefix";
+import { LabsIcon } from "../labs/LabsIcons";
 import SponsorNavLink from "@/sponsor/SponsorNavLink";
 import MobileMenu from "../MobileMenu";
 import ThemeHint from "../ThemeHint";
@@ -76,7 +76,6 @@ export default function HeroSection() {
               transition={instant ? { duration: 0 } : softSpring}
             >
               <div className="hero__brand pin-rise" style={rise(0.05)}>
-                <LabsPrefix />
                 {/* the mark is the switch; the wordmark beside it is plain type */}
                 <ThemeMark
                   buttonClassName="hero__markButton"
@@ -115,8 +114,17 @@ export default function HeroSection() {
         </AnimatePresence>
 
         <div className="hero__center">
-          <Link className="hero__submit pin-rise" href="/shadcn-labs" style={rise(0.2)}>
-            Part of Shadcn Labs <span aria-hidden="true">→</span>
+          {/* the announcement badge over the claim: Pin UI as part of Shadcn Labs */}
+          <Link className="hero__labs pin-rise" href="/shadcn-labs" style={rise(0.2)}>
+            <span className="hero__labsMark" aria-hidden="true">
+              <LabsIcon />
+            </span>
+            <span className="hero__labsText">
+              Part of <strong>Shadcn Labs</strong>
+            </span>
+            <svg className="hero__labsArrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3.5 8h9M8.5 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </Link>
 
           {/*

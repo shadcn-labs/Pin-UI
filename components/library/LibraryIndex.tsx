@@ -5,7 +5,6 @@ import Link from "next/link";
 import BlocksLink from "@/components/BlocksLink";
 import { motion, useReducedMotion } from "motion/react";
 import ThemeMark from "../ThemeMark";
-import LabsPrefix from "../LabsPrefix";
 import SponsorNavLink from "@/sponsor/SponsorNavLink";
 import MobileMenu from "../MobileMenu";
 import ThemeHint from "../ThemeHint";
@@ -109,7 +108,6 @@ export default function LibraryIndex() {
     <div className="site lib-page cards-v2">
       <header className="lib__bar" data-scrolled={scrolled}>
         <div className="lib__brand">
-          <LabsPrefix />
           <ThemeMark buttonClassName="lib__markButton" markClassName="lib__mark" tap={0.88} />
           <Link className="lib__word" href="/">
             Pin UI

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import ThemeMark from "../ThemeMark";
-import LabsPrefix from "../LabsPrefix";
 import MobileMenu from "../MobileMenu";
 import ThemeHint from "../ThemeHint";
 import { softSpring } from "@/lib/motion";
@@ -169,7 +168,6 @@ export default function WorkbenchShell({ children }: { children: ReactNode }) {
       <nav className="wbnav" aria-label="Components" ref={navRef}>
         <div className="wbnav__head">
           <div className="wbnav__lockup">
-            <LabsPrefix />
             {/* the mark is the switch; the wordmark beside it goes home */}
             <ThemeMark
               buttonClassName="wbnav__markButton"
