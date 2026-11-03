@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import BlocksLink from "@/components/BlocksLink";
 import ThemeMark from "./ThemeMark";
-import LabsPrefix from "./LabsPrefix";
 import SponsorNavLink from "@/sponsor/SponsorNavLink";
 import MobileMenu from "./MobileMenu";
 import ThemeHint from "./ThemeHint";
@@ -47,7 +46,6 @@ export default function PageBar({ hideOver }: { hideOver?: string } = {}) {
   return (
         <header className="lib__bar" data-scrolled={scrolled} data-away={away || undefined}>
           <div className="lib__brand">
-            <LabsPrefix />
             <ThemeMark buttonClassName="lib__markButton" markClassName="lib__mark" tap={0.88} />
             <Link className="lib__word" href="/">
               Pin UI

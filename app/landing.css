@@ -34,6 +34,13 @@
   --hero-rule: 1px;
   --hero-radius: 1.125em; /* 18 */
   --hero-sub: rgb(15 15 15 / 0.8);
+  /* the Shadcn Labs badge over the claim: frosted white over the wall */
+  --hero-badge-fill: rgb(255 255 255 / 0.78);
+  --hero-badge-edge: rgb(10 10 10 / 0.1);
+  --hero-badge-edge-hover: rgb(230 0 36 / 0.45);
+  --hero-badge-ink: #0a0a0a;
+  --hero-badge-dim: rgb(10 10 10 / 0.62);
+  --hero-badge-shadow: 0 1px 2px rgb(10 10 10 / 0.06), 0 6px 20px -8px rgb(10 10 10 / 0.18);
   /* the stamp as Figma 501:931 draws it, at its 241.92 × 66.53 */
   --hero-stamp-w: 15.12em;
   --hero-stamp-h: 4.158em;
@@ -63,6 +70,12 @@
   /* the brand's red star in the white mark, as the dark lockup is drawn */
   --pin-mark-star: #e60024;
   --hero-sub: rgb(255 255 255 / 0.8);
+  --hero-badge-fill: rgb(18 18 18 / 0.72);
+  --hero-badge-edge: rgb(255 255 255 / 0.14);
+  --hero-badge-edge-hover: rgb(255 255 255 / 0.34);
+  --hero-badge-ink: #ffffff;
+  --hero-badge-dim: rgb(255 255 255 / 0.66);
+  --hero-badge-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 8px 24px -10px rgb(0 0 0 / 0.7);
 
   --sec-ink: #f7f7f7;
   --sec-note: rgb(255 255 255 / 0.72);
@@ -305,42 +318,117 @@
   text-align: center;
 }
 
-.hero__submit {
-  margin-bottom: 1em; /* 16, between its line and the claim's cap height */
-  color: var(--hero-sub);
-  font-size: 0.875em; /* 14 */
+/*
+ * The badge over the claim — "Part of Shadcn Labs". A frosted pill on the
+ * wall of cards: the lab's mark in a red disc, the line with the lab's name
+ * set heavier, and an arrow. On hover the edge warms, a sheen crosses it once
+ * and the arrow steps on; the claim under it never moves.
+ */
+.hero__labs {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-bottom: 1.35em; /* between the badge and the claim's cap height */
+  padding: 0.36em 0.95em 0.36em 0.36em;
+  overflow: hidden;
+  border: 1px solid var(--hero-badge-edge);
+  border-radius: 999px;
+  background: var(--hero-badge-fill);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: var(--hero-badge-shadow);
+  color: var(--hero-badge-dim);
+  font-size: 1em; /* the hero's own size: 14 at 1280, 16 on a wide screen */
+  font-weight: 500;
   line-height: 1;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  text-decoration: none;
   transition:
-    color var(--pin-theme-fade) var(--pin-theme-ease),
-    text-underline-offset 0.25s ease;
+    border-color 0.3s ease,
+    color 0.3s ease,
+    background-color var(--pin-theme-fade) var(--pin-theme-ease),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.hero__submit span {
-  display: inline-block;
-  transition: transform 0.3s cubic-bezier(0.22, 0.68, 0.16, 1);
+/* the sheen: parked off the left edge, run across on hover */
+.hero__labs::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.22) 50%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.hero__labsMark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.75em;
+  height: 1.75em;
+  border-radius: 50%;
+  background: var(--pin-red, #e60024);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+}
+
+.hero__labsMark svg {
+  display: block;
+  width: 0.98em;
+  height: auto;
+}
+
+.hero__labsText strong {
+  color: var(--hero-badge-ink);
+  font-weight: 600;
+  transition: color var(--pin-theme-fade) var(--pin-theme-ease);
+}
+
+.hero__labsArrow {
+  display: block;
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  margin-left: -0.1em;
+  color: var(--hero-badge-ink);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (hover: hover) {
-  /* the site's red, in both faces */
-  .hero__submit:hover {
-    color: var(--pin-red, #e60024);
-    transition:
-      color 0.2s ease,
-      text-underline-offset 0.25s ease;
-    text-underline-offset: 0.28em;
+  .hero__labs:hover {
+    border-color: var(--hero-badge-edge-hover);
+    color: var(--hero-badge-ink);
   }
 
-  .hero__submit:hover span {
-    transform: translateX(0.2em);
+  .hero__labs:hover::after {
+    transform: translateX(120%);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero__labs:hover .hero__labsArrow {
+    transform: translateX(0.22em);
   }
 }
 
-.hero__submit:focus-visible {
-  outline: 2px solid var(--hero-red);
-  outline-offset: 4px;
+.hero__labs:active {
+  transform: scale(0.97);
+}
+
+.hero__labs:focus-visible {
+  outline: 2px solid var(--pin-red, #e60024);
+  outline-offset: 3px;
+}
+
+/* a phone: the badge a step smaller, so it sits above a two-line claim without crowding it */
+@media (max-width: 700px) {
+  .hero__labs {
+    /* the claim's lines are clipped boxes taller than their type: clear them */
+    margin-bottom: 1.5em;
+    /* never under 12.5px, however small the phone's base size gets */
+    font-size: max(0.875em, 12.5px);
+  }
 }
 
 .landing .hero__claim {
@@ -704,8 +792,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__submit,
-  .hero__submit span {
+  .hero__labs,
+  .hero__labs::after,
+  .hero__labsArrow {
     transition: none;
   }
 }
