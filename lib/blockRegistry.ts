@@ -57,7 +57,7 @@ export async function buildBlockRegistryItem(block: Block) {
     `The stylesheet sits next to the component and is imported by it, so keep them together in ${BLOCK_INSTALL_DIR}/.`,
     meta.usesNext ? "It loads its fonts with next/font, so it expects a Next.js app (App Router)." : "",
     binaryAssets.length
-      ? `Its images are not part of this package. Copy public/blocx/${block.slug}/ from https://github.com/Rachit315/Pin-UI/tree/main/public/blocx/${block.slug} into your own public/ folder (${binaryAssets.length} file${binaryAssets.length === 1 ? "" : "s"}), or change the paths at the top of the component.`
+      ? `Its images are not part of this package. Copy public/blocx/${block.slug}/ from https://github.com/shadcn-labs/Pin-UI/tree/main/public/blocx/${block.slug} into your own public/ folder (${binaryAssets.length} file${binaryAssets.length === 1 ? "" : "s"}), or change the paths at the top of the component.`
       : "",
   ]
     .filter((line, i, all) => line !== "" || (i > 0 && all[i - 1] !== ""))

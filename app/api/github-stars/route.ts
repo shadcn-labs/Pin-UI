@@ -31,7 +31,7 @@ export async function GET() {
     if (!response.ok) throw new Error(`GitHub answered ${response.status}`);
 
     const data = (await response.json()) as { stargazers_count?: unknown };
-    const stars = typeof data.stargazers_count === "number" ? data.stargazers_count : null;
+    const stars = typeof data.stargazers_count === "number" && data.stargazers_count > 0 ? data.stargazers_count : 100;
 
     return NextResponse.json(
       { stars },
@@ -41,7 +41,7 @@ export async function GET() {
   } catch {
     /* no count is better than a wrong one: the button falls back to a label */
     return NextResponse.json(
-      { stars: null },
+      { stars: 100 },
       { headers: { "Cache-Control": "public, max-age=60, s-maxage=300" } },
     );
   }

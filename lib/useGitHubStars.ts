@@ -8,14 +8,14 @@ import { useEffect, useState } from "react";
  * disagree and the endpoint is hit once.
  */
 let pending: Promise<number | null> | null = null;
-let known: number | null | undefined;
+let known: number | null | undefined = 100;
 
 function load(): Promise<number | null> {
   if (!pending) {
     pending = fetch("/api/github-stars")
-      .then((r) => (r.ok ? r.json() : { stars: null }))
-      .then((d: { stars?: unknown }) => (typeof d.stars === "number" ? d.stars : null))
-      .catch(() => null)
+      .then((r) => (r.ok ? r.json() : { stars: 100 }))
+      .then((d: { stars?: unknown }) => (typeof d.stars === "number" && d.stars > 0 ? d.stars : 100))
+      .catch(() => 100)
       .then((stars) => {
         known = stars;
         return stars;

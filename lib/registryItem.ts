@@ -109,7 +109,7 @@ function docsFor(entry: Entry): string {
   if (entry.slug === "taxi") {
     lines.push(
       "",
-      "The ride's twelve sound cues are not part of this package: `soundBase` defaults to /sounds/taxi. Copy them from https://github.com/Rachit315/Pin-UI/tree/main/public/sounds/taxi into your own public folder (their licences and credits are in the same folder), or pass sound={false}. A missing cue just stays silent.",
+      "The ride's twelve sound cues are not part of this package: `soundBase` defaults to /sounds/taxi. Copy them from https://github.com/shadcn-labs/Pin-UI/tree/main/public/sounds/taxi into your own public folder (their licences and credits are in the same folder), or pass sound={false}. A missing cue just stays silent.",
     );
   }
 
@@ -123,7 +123,7 @@ function docsFor(entry: Entry): string {
   if (entry.slug === "chat-room") {
     lines.push(
       "",
-      "The default faces are not part of this package: they point at /library/voice/*.webp. Pass your own `people` — id, name, portrait URL and whether they are speaking — or copy the portraits from https://github.com/Rachit315/Pin-UI/tree/main/public/library/voice into your own public folder.",
+      "The default faces are not part of this package: they point at /library/voice/*.webp. Pass your own `people` — id, name, portrait URL and whether they are speaking — or copy the portraits from https://github.com/shadcn-labs/Pin-UI/tree/main/public/library/voice into your own public folder.",
     );
   }
 
@@ -151,7 +151,7 @@ function docsFor(entry: Entry): string {
   if (entry.slug === "desk-computer") {
     lines.push(
       "",
-      "The drawing is not part of this package: it is ~480KB of SVG, fetched at mount from `src` (default /library/desk-computer.svg). Copy it from https://github.com/Rachit315/Pin-UI/tree/main/public/library/desk-computer.svg into your own public folder, or point `src` at wherever you serve it. desk-computer-engine.ts is everything it does and must sit beside the component. Its sounds are synthesised with Web Audio and only ever answer the visitor's own input; pass sound={false} to silence them. It was built with the Anatomy skill's kit (MIT, © 2026 Ryan): https://github.com/wheresryan22/anatomy",
+      "The drawing is not part of this package: it is ~480KB of SVG, fetched at mount from `src` (default /library/desk-computer.svg). Copy it from https://github.com/shadcn-labs/Pin-UI/tree/main/public/library/desk-computer.svg into your own public folder, or point `src` at wherever you serve it. desk-computer-engine.ts is everything it does and must sit beside the component. Its sounds are synthesised with Web Audio and only ever answer the visitor's own input; pass sound={false} to silence them. It was built with the Anatomy skill's kit (MIT, © 2026 Ryan): https://github.com/wheresryan22/anatomy",
     );
   }
 

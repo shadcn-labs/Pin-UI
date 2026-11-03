@@ -8,7 +8,7 @@
  */
 export const LINKS = {
   /** The repository this site is built from. */
-  github: "https://github.com/Rachit315/Pin-UI",
+  github: "https://github.com/shadcn-labs/Pin-UI",
   x: "https://x.com/RachitThakur146",
   /**
    * The board the components were found on.
@@ -25,7 +25,7 @@ export const LINKS = {
 
   /** All external profiles, used by Organization schema `sameAs`. */
   profiles: [
-    "https://github.com/Rachit315/Pin-UI",
+    "https://github.com/shadcn-labs/Pin-UI",
     "https://x.com/RachitThakur146",
     "https://in.pinterest.com/rachitrampage23/pin-ui/",
   ],
