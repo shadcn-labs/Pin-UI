@@ -1,0 +1,311 @@
+/* ===========================================================================
+   Diwali in the hero (Diwali.tsx): a diya you can carry, and an anar it lights.
+   ---------------------------------------------------------------------------
+   One layer over the frame taking no pointer events of its own: only the diya
+   and the anar do. It makes no stacking context of its own, so its pieces
+   stack with the hero's: the sparks over the wall and the foot's haze but
+   under the claim and the stamp (z 1 < 2), the diya and the anar on top with
+   the masthead (z 3). Sized in em of the hero, so both scale with it;
+   positions are shares of the frame, so they sit in the same places at any
+   size.
+=========================================================================== */
+
+.diwali {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.diwali__sparks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: block;
+}
+
+/* the warm pool on the ground under a burning anar */
+.diwali__floor {
+  position: absolute;
+  bottom: -6em;
+  /* centred under the anar */
+  left: calc(var(--anar-left) + var(--anar-w) / 2);
+  z-index: 1;
+  width: 30em;
+  height: 14em;
+  translate: -50% 0;
+  background: radial-gradient(closest-side, rgb(255 170 60 / 0.55), rgb(255 110 20 / 0.18) 55%, transparent);
+  opacity: calc(var(--burn, 0) * 0.9);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+:root[data-pin-theme="light"] .diwali__floor {
+  mix-blend-mode: multiply;
+  background: radial-gradient(closest-side, rgb(255 170 60 / 0.35), rgb(255 140 40 / 0.1) 55%, transparent);
+}
+
+/* --- the anar ------------------------------------------------------------- */
+
+.diwali {
+  /* bottom centre: the anar's left edge half its width short of the middle */
+  --anar-left: calc(50% - var(--anar-w) / 2);
+  --anar-w: 3.9em;
+}
+
+.anar {
+  position: absolute;
+  bottom: 1.2em;
+  left: var(--anar-left);
+  z-index: 3;
+  width: var(--anar-w);
+  pointer-events: auto;
+  filter: drop-shadow(0 0.5em 0.6em rgb(0 0 0 / 0.35));
+  transition: filter 0.8s ease, opacity 0.6s ease;
+}
+
+.anar__body {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.anar__wick {
+  transition: opacity 0.4s ease;
+}
+
+/* the wick's tip and the ember that grows on it as a flame is held there */
+.anar__tip {
+  position: absolute;
+  top: 2.7%;
+  left: 50%;
+  width: 1.4em;
+  height: 1.4em;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #fff4c2, #ffb02e 40%, rgb(255 90 0 / 0) 100%);
+  opacity: var(--charge, 0);
+  scale: calc(0.4 + var(--charge, 0) * 0.9);
+  pointer-events: none;
+}
+
+/* the mouth while it burns: white-hot, flaring with the fountain */
+.anar__fire {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  width: 3.2em;
+  height: 2.4em;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #ffffff, #fff1b0 30%, rgb(255 170 40 / 0.55) 60%, transparent);
+  opacity: var(--burn, 0);
+  scale: calc(0.6 + var(--burn, 0) * 0.5);
+  pointer-events: none;
+}
+
+.anar[data-state="burning"] .anar__wick,
+.anar[data-state="spent"] .anar__wick {
+  opacity: 0;
+}
+
+/* spent: the mouth charred and the pot dulled, until a fresh one is ready */
+.anar[data-state="spent"] {
+  filter: drop-shadow(0 0.5em 0.6em rgb(0 0 0 / 0.35)) saturate(0.55) brightness(0.78);
+}
+
+.anar[data-state="spent"] .anar__mouth {
+  fill: #120604;
+}
+
+/* --- the diya --------------------------------------------------------------- */
+
+.diya {
+  position: absolute;
+  right: 3.2%;
+  bottom: 3%;
+  z-index: 3;
+  width: 6.8em;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
+  filter: drop-shadow(0 0.6em 0.7em rgb(0 0 0 / 0.4));
+}
+
+.diwali[data-dragging] .diya {
+  cursor: grabbing;
+  filter: drop-shadow(0 1.4em 1.2em rgb(0 0 0 / 0.42));
+}
+
+.diya:focus-visible {
+  outline: 2px solid #ffc93a;
+  outline-offset: 6px;
+  border-radius: 1em;
+}
+
+.diya__lamp {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/*
+ * The flame stands on the wick at the spout's lip, leans against the carry
+ * (--lean, written each frame while it moves) and flickers on its own.
+ */
+.diya__flame {
+  position: absolute;
+  top: 25.9%;
+  left: 5%;
+  z-index: 1;
+  width: 1.7em;
+  height: 3em;
+  transform: translate(-50%, -94%) rotate(var(--lean, 0deg));
+  transform-origin: 50% 94%;
+  pointer-events: none;
+}
+
+.diya__fire {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 92%;
+  animation: diya-flicker 1.9s ease-in-out infinite;
+}
+
+.diya__inner {
+  transform-origin: 50% 90%;
+  animation: diya-core 1.3s ease-in-out infinite;
+}
+
+/* the halo the flame throws around itself */
+.diya__halo {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  width: 5.8em;
+  height: 5.8em;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 190 80 / 0.42), rgb(255 140 40 / 0.14) 45%, transparent);
+  mix-blend-mode: screen;
+  animation: diya-halo 2.6s ease-in-out infinite;
+}
+
+:root[data-pin-theme="light"] .diya__halo {
+  mix-blend-mode: multiply;
+  background: radial-gradient(closest-side, rgb(255 180 70 / 0.3), rgb(255 150 50 / 0.08) 45%, transparent);
+}
+
+@keyframes diya-flicker {
+  0%,
+  100% {
+    transform: scale(1, 1) skewX(0deg);
+  }
+  18% {
+    transform: scale(0.96, 1.05) skewX(1.5deg);
+  }
+  36% {
+    transform: scale(1.03, 0.95) skewX(-1deg);
+  }
+  52% {
+    transform: scale(0.98, 1.08) skewX(2deg);
+  }
+  71% {
+    transform: scale(1.02, 0.97) skewX(-2deg);
+  }
+  86% {
+    transform: scale(0.97, 1.03) skewX(0.5deg);
+  }
+}
+
+@keyframes diya-core {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  40% {
+    transform: scale(0.94, 1.08);
+  }
+  70% {
+    transform: scale(1.04, 0.94);
+  }
+}
+
+@keyframes diya-halo {
+  0%,
+  100% {
+    opacity: 0.85;
+    scale: 1;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.08;
+  }
+}
+
+/* the note beside the diya, in the hand of the theme hint; gone once it has been used */
+.diwali__hint {
+  position: absolute;
+  right: calc(3.2% + 7.4em);
+  z-index: 3;
+  bottom: calc(3% + 1.6em);
+  color: var(--hero-sub, rgb(255 255 255 / 0.8));
+  font-family: var(--font-scribble), cursive;
+  font-size: 1.35em;
+  line-height: 1;
+  white-space: nowrap;
+  rotate: -6deg;
+  opacity: 0.9;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.diwali[data-dragging] .diwali__hint,
+.diwali[data-done] .diwali__hint {
+  opacity: 0;
+}
+
+/* --- smaller screens ------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .diya {
+    width: 5.2em;
+    right: 4%;
+    bottom: 2.5%;
+  }
+
+  .diya__flame {
+    width: 1.3em;
+    height: 2.3em;
+  }
+
+  .diwali {
+    --anar-left: calc(50% - var(--anar-w) / 2);
+    --anar-w: 3em;
+  }
+
+  .anar {
+    bottom: 1em;
+  }
+
+  .diwali__hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diya__fire,
+  .diya__inner,
+  .diya__halo {
+    animation: none;
+  }
+}

@@ -1,0 +1,32 @@
+/*
+ * The fairy lights (FairyLights.tsx): one canvas laid over the frame it sits
+ * in. It comes after the frame's own background in the markup and before its
+ * content, so it glows over the field and under the type or the component —
+ * and it takes no pointer events, so every click still reaches the frame.
+ */
+.flights {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+  animation: flights-in 0.6s ease 0.2s backwards;
+}
+
+/* over a scene that fills the frame: above the scene, below the stage's own toolbar */
+.flights--over {
+  z-index: 2;
+}
+
+@keyframes flights-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flights {
+    animation: none;
+  }
+}

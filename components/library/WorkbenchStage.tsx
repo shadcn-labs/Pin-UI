@@ -7,6 +7,7 @@ import InstallBlock from "./InstallBlock";
 import ChipsEditor, { type ChipsSettings } from "./ChipsEditor";
 import RequestChip from "./RequestChip";
 import StageBar from "./StageBar";
+import FairyLights from "@/components/hero/FairyLights";
 import type { Entry } from "./registry";
 import { LINKS } from "@/lib/links";
 import { setTheme as setSiteTheme, usePinTheme } from "@/lib/theme";
@@ -103,6 +104,13 @@ export default function WorkbenchStage({
       */}
       <div className={`wbstage__frame${opened ? " wbstage__frame--compact" : ""}`}>
         <div className="wbstage__field" style={{ background: field }} aria-hidden="true" />
+        {/*
+          The fairy lights, over the field and under the component, hung so
+          their lowest bulb stays clear above it: lit in the dark, off on the
+          light face. A click on the field changes their
+          pattern; a click on the component stays the component's.
+        */}
+        {!entry.fill && <FairyLights ignore=".wbstage__hold > *" clear=".wbstage__hold > *" />}
 
         <div
           className={`wbstage__hold${entry.fill ? " wbstage__hold--fill" : ""}${entry.wide ? " wbstage__hold--wide" : ""}${
@@ -155,6 +163,14 @@ export default function WorkbenchStage({
             />
           )}
         </div>
+
+        {/*
+          A scene that fills the stage edge to edge leaves no field above it to
+          hang the lights in, so there they hang over the scene: a shallow
+          canopy across its top band, taking no pointer events, so the scene
+          works exactly as it does without them.
+        */}
+        {entry.fill && <FairyLights ignore=".wbstage__hold > *" band={0.2} over />}
 
         {entry.slug === "chips" && <ChipsEditor value={chips} onChange={setChips} />}
 

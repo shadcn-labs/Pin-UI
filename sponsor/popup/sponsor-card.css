@@ -1,0 +1,589 @@
+/* ===========================================================================
+   The sponsor card on the landing page (SponsorCard.tsx) — Figma 609:105.
+   ---------------------------------------------------------------------------
+   Sized in em off the card: 20em wide is the design's 320 at 16px, set a
+   touch larger on a desktop. The card is the brand red in both theme states,
+   as drawn; only the scrim behind it follows the theme. The design's wash
+   runs to blush by the middle, where white type would fall to about 2.5:1;
+   here the red holds through the type and blooms to blush behind the
+   buttons, so every line reads at AA.
+=========================================================================== */
+
+.spk {
+  --spk-scrim: rgb(10 10 10 / 0.38);
+  --spk-red: #e60024;
+  --spk-edge: rgb(255 152 168 / 0.9);
+  --spk-ink: #ffffff;
+  --spk-soft: rgb(255 255 255 / 0.86);
+  --spk-tile: rgb(255 255 255 / 0.64);
+  --spk-tile-on: #ffffff;
+  --spk-tip-ink: #1f1f1f;
+  --spk-rule: rgb(255 255 255 / 0.4);
+
+  position: fixed;
+  inset: 0;
+  /* above the page and its rail */
+  z-index: 2147482000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: var(--spk-scrim);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  font-family: var(--pin-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+:root[data-pin-theme="crimson"] .spk {
+  --spk-scrim: rgb(0 0 0 / 0.62);
+}
+
+/*
+ * A <button> does not inherit type: browsers set it at 13.33px. Every size
+ * in here is in em of the card, so its buttons take the card's type first —
+ * otherwise the tiles and the cross come out a quarter small and the plate
+ * (a plain span) no longer lands on them.
+ */
+:where(.spk__card) button {
+  font: inherit;
+  color: inherit;
+}
+
+.spk__card {
+  position: relative;
+  width: min(20em, 100%);
+  overflow: hidden;
+  border: 1px solid var(--spk-edge);
+  border-radius: 1.5em; /* 24 */
+  background: var(--spk-red);
+  box-shadow:
+    0 2em 4em -2em rgb(120 0 18 / 0.6),
+    0 0.15em 0.5em rgb(0 0 0 / 0.14),
+    inset 0 1px 0 rgb(255 255 255 / 0.18);
+  color: var(--spk-ink);
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  .spk__card {
+    font-size: 17.5px;
+  }
+}
+
+/* the dialog takes focus on open so Tab starts inside it; it draws no ring of its own */
+.spk__card:focus {
+  outline: none;
+}
+
+/* the wash: red through the type, blooming to blush behind the buttons */
+.spk__wash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #e60024 0%, #e8172b 58%, #ef4654 80%, #f57a85 100%);
+  pointer-events: none;
+}
+
+/* the design's blurred bands leave a soft grain of light near the top */
+.spk__wash::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  width: 120%;
+  height: 70%;
+  translate: -50% 0;
+  background: radial-gradient(closest-side, rgb(255 60 80 / 0.55), transparent);
+  filter: blur(20px);
+}
+
+/* --- the cross ------------------------------------------------------------- */
+
+/* on the same 17px inset as the title and the buttons, a size a thumb can find */
+.spk__close {
+  position: absolute;
+  top: 1.075em;
+  right: 1.075em;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 2em; /* 32 */
+  height: 2em;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.22);
+  color: #ffffff;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.spk__close svg {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+/* a 44px target around the 32px disc */
+.spk__close::before {
+  content: "";
+  position: absolute;
+  inset: -0.375em;
+}
+
+@media (hover: hover) {
+  .spk__close:hover {
+    background: rgb(255 255 255 / 0.36);
+    transform: rotate(90deg);
+  }
+}
+
+.spk__close:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* --- the tiers ------------------------------------------------------------ */
+
+.spk__tiers {
+  /* a tile and the gap after it: one step of the choice */
+  --spk-size: 5.28em; /* 84.48 */
+  --spk-gap: 0.275em; /* 4.4 */
+  --spk-step: calc(var(--spk-size) + var(--spk-gap));
+  /* the spring the plate and the bubble ride on: quick away, a small settle */
+  --spk-ride: 0.5s cubic-bezier(0.3, 1.18, 0.5, 1);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--spk-gap);
+  width: max-content;
+  margin: 0 auto;
+  /* the design's tiles start at 83, under the bubble's room */
+  padding-top: 5.2em;
+}
+
+/*
+ * Three layers, bottom to top — fills, the plate, the tiles — each with its
+ * own z-index on the track, so the plate sits between a tile's blush and its
+ * sprite without depending on how the tiles stack inside themselves.
+ */
+
+/* layer 1: each tile's blush, where the design draws it */
+.spk__fill {
+  position: absolute;
+  top: 5.2em;
+  left: 0;
+  z-index: 0;
+  width: var(--spk-size);
+  height: var(--spk-size);
+  border-radius: 0.5em; /* 8 */
+  background: var(--spk-tile);
+  transform: translateX(calc(var(--spk-at) * var(--spk-step)));
+  pointer-events: none;
+  animation: spk-tile-in 0.5s cubic-bezier(0.34, 1.4, 0.6, 1) calc(0.12s + var(--spk-at) * 0.06s) backwards;
+}
+
+/* layer 3: the tiles — clear, the sprite and the hit area */
+.spk__tile {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--spk-size);
+  height: var(--spk-size);
+  padding: 0;
+  border: 0;
+  border-radius: 0.5em; /* 8 */
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  animation: spk-tile-in 0.5s cubic-bezier(0.34, 1.4, 0.6, 1) calc(0.12s + var(--spk-at) * 0.06s) backwards;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* fills and tiles arrive together, one after another along the row */
+@keyframes spk-tile-in {
+  from {
+    opacity: 0;
+    translate: 0 0.9em;
+    scale: 0.9;
+  }
+}
+
+/*
+ * Layer 2: the white plate under the chosen sprite. It slides from tile to
+ * tile rather than one tile switching off and another on.
+ */
+.spk__plate {
+  position: absolute;
+  top: 5.2em;
+  left: 0;
+  z-index: 1;
+  width: var(--spk-size);
+  height: var(--spk-size);
+  border-radius: 0.5em;
+  background: var(--spk-tile-on);
+  box-shadow: 0 0.6em 1.2em -0.6em rgb(120 0 18 / 0.55);
+  transform: translateX(calc(var(--spk-i, 0) * var(--spk-step)));
+  transition: transform var(--spk-ride);
+  pointer-events: none;
+  animation: spk-plate-in 0.5s cubic-bezier(0.34, 1.4, 0.6, 1) 0.18s backwards;
+}
+
+@keyframes spk-plate-in {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+/* hovering a tile not chosen: its blush brightens a step and its sprite leans in */
+@media (hover: hover) {
+  .spk__tile:not([data-on]):hover {
+    background: rgb(255 255 255 / 0.2);
+  }
+
+  .spk__tile:not([data-on]):hover .spk__sprite {
+    transform: scale(0.98) rotate(-4deg);
+  }
+}
+
+.spk__tile:not([data-on]):active .spk__sprite {
+  transform: scale(0.86);
+}
+
+.spk__tile:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.spk__sprite {
+  display: block;
+  width: 3.4em;
+  height: 3.4em;
+  object-fit: contain;
+  image-rendering: pixelated;
+  user-select: none;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.spk__tile:not([data-on]) .spk__sprite {
+  transform: scale(0.9);
+}
+
+/* the chosen one breathes: a slow two-pixel bob */
+@media (prefers-reduced-motion: no-preference) {
+  .spk__tile[data-on] .spk__sprite {
+    animation: spk-bob 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes spk-bob {
+  50% {
+    transform: translateY(-0.14em) scale(1.04);
+  }
+}
+
+/* the name bubble, on a rail a tile wide that rides with the plate, its point resting on it */
+.spk__tipRail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: var(--spk-size);
+  height: calc(5.2em - 0.42em);
+  transform: translateX(calc(var(--spk-i, 0) * var(--spk-step)));
+  transition: transform var(--spk-ride);
+  pointer-events: none;
+  animation: spk-tip-in 0.45s cubic-bezier(0.34, 1.5, 0.6, 1) 0.32s backwards;
+}
+
+@keyframes spk-tip-in {
+  from {
+    opacity: 0;
+    translate: 0 0.4em;
+  }
+}
+
+/* one width for every name, so the bubble never jumps between "Gold" and "Supporter" */
+.spk__tip {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 92%;
+  height: 1.55em;
+  overflow: visible;
+  border-radius: 0.22em;
+  background: #ffffff;
+  box-shadow: 0 0.3em 0.8em -0.3em rgb(120 0 18 / 0.5);
+  color: var(--spk-tip-ink);
+  font-size: 0.875em; /* 14 */
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.spk__tip::after {
+  content: "";
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 50%;
+  width: 0;
+  height: 0;
+  translate: -50% 0;
+  border-top: 0.4em solid #ffffff;
+  border-right: 0.36em solid transparent;
+  border-left: 0.36em solid transparent;
+}
+
+/* the names swap inside the bubble and never show outside it; the point stays outside the clip */
+.spk__tipClip {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.spk__tipText {
+  display: block;
+  grid-area: 1 / 1;
+}
+
+/* --- the rule, and the timer along it ---------------------------------------- */
+
+.spk__rule {
+  position: relative;
+  z-index: 1;
+  height: 1px;
+  margin-top: 2.2em;
+  background: var(--spk-rule);
+}
+
+/*
+ * The ticker: a 3px line of light laid over the 1px rule, centred on it, so
+ * the rule reads as lighting up. Its wrapper is what wipes away to the right
+ * at the hand-off (SponsorCard.tsx); the line inside is what fills, linear, as
+ * a timer should, its leading end rounded and glowing.
+ */
+.spk__ticker {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 3px;
+}
+
+/*
+ * It fills by growing in width rather than by scaling, so its rounded leading
+ * end stays a crisp half-circle from the first pixel instead of a squashed
+ * one. It is one small line out of the flow, so growing it costs nothing.
+ */
+.spk__timer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.7), #ffffff 85%);
+  box-shadow:
+    0 0 8px rgb(255 255 255 / 0.55),
+    0 0 2px rgb(255 255 255 / 0.9);
+  animation: spk-fill var(--spk-cycle, 3.4s) linear var(--spk-wait, 0s) forwards;
+}
+
+/*
+ * Paused, not ended, while a pointer rests on the tiles or the buttons, or
+ * the keyboard is on the buttons: the line holds where it is, so does the
+ * tier, and both carry on from there when the hand moves away. The line
+ * finishing is what moves the card on, so pausing the line pauses the turns.
+ */
+.spk__card:has(.spk__tiers:hover, .spk__actions:hover, .spk__actions :focus-visible) .spk__timer {
+  animation-play-state: paused;
+}
+
+@keyframes spk-fill {
+  to {
+    width: 100%;
+  }
+}
+
+/* --- the title and the chosen tier --------------------------------------------- */
+
+.spk__body {
+  position: relative;
+  z-index: 1;
+  padding: 0.9em 1.075em 0;
+}
+
+.spk__title {
+  margin: 0;
+  font-size: 1.125em; /* 18 */
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.spk__detail {
+  position: relative;
+  min-height: 5.3em;
+  margin-top: 0.85em;
+}
+
+.spk__detailInner {
+  display: grid;
+  gap: 0.35em;
+}
+
+.spk__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+  margin: 0;
+}
+
+.spk__amount {
+  font-size: 2em; /* 32 */
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.spk__per {
+  color: var(--spk-soft);
+  font-size: 0.8125em;
+  font-weight: 500;
+}
+
+.spk__line {
+  max-width: 17em;
+  margin: 0;
+  color: #ffffff;
+  font-size: 0.8125em; /* 13 */
+  line-height: 1.4;
+}
+
+/* --- the two answers ------------------------------------------------------------ */
+
+.spk__actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 0.5em;
+  padding: 1.1em 1.075em 1.075em;
+}
+
+.spk__cta,
+.spk__later {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* never under 40px: a comfortable thumb on a phone */
+  height: max(2.75em, 40px);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.875em; /* 14 */
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Browse plans: the main answer, white on the blush */
+.spk__cta {
+  gap: 0.45em;
+  padding: 0 1em;
+  border: 0;
+  background: #ffffff;
+  box-shadow: 0 0.4em 1em -0.4em rgb(120 0 18 / 0.55);
+  color: #0a0a0a;
+}
+
+.spk__ctaArrow {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * Not now: white type on glass tinted with the brand's deepest red. Plain
+ * white glass on the blush would leave white type near 2.5:1; the tint brings
+ * the pill down to where white reads at 4.5:1, and it still reads as the
+ * quieter answer beside the solid white one.
+ */
+.spk__later {
+  padding: 0 0.9em;
+  border: 1px solid rgb(255 255 255 / 0.42);
+  background: rgb(120 0 18 / 0.34);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .spk__cta:hover {
+    box-shadow: 0 0.6em 1.4em -0.5em rgb(120 0 18 / 0.65);
+    transform: translateY(-1px);
+  }
+
+  .spk__cta:hover .spk__ctaArrow {
+    transform: translateX(0.2em);
+  }
+
+  .spk__later:hover {
+    border-color: rgb(255 255 255 / 0.6);
+    background: rgb(120 0 18 / 0.46);
+  }
+}
+
+.spk__cta:active,
+.spk__later:active {
+  transform: scale(0.97);
+}
+
+.spk__cta:focus-visible,
+.spk__later:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* the narrowest phones: the answers stack rather than squeeze */
+@media (max-width: 340px) {
+  .spk__actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spk__fill,
+  .spk__tile,
+  .spk__plate,
+  .spk__tipRail {
+    transition: none;
+    animation: none;
+  }
+
+  .spk__close,
+  .spk__sprite,
+  .spk__cta,
+  .spk__later,
+  .spk__ctaArrow {
+    transition: none;
+  }
+}

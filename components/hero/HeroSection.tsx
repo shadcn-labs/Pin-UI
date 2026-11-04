@@ -4,6 +4,8 @@ import BlocksLink from "../BlocksLink";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import HeroWall from "./HeroWall";
+import FairyLights from "./FairyLights";
+import Diwali from "./Diwali";
 import PinterestPeek from "./PinterestPeek";
 import GitHubStars from "./GitHubStars";
 import ThemeMark from "../ThemeMark";
@@ -46,6 +48,8 @@ export default function HeroSection() {
     <main className="hero" id="top">
       <div className="hero__frame">
         <HeroWall />
+        {/* fairy lights strung over the wall and hung clear above the claim — a click on the hero changes their pattern */}
+        <FairyLights clear=".hero__center" ignore=".diwali" />
         {/*
           The wall softens into the frame's foot rather than stopping at it: a
           progressive blur, six layers each starting lower and blurring twice
@@ -157,6 +161,9 @@ export default function HeroSection() {
             <span className="hero__stampLabel">Browse Components</span>
           </motion.a>
         </div>
+
+        {/* a diya to carry to the anar under the stamp; its fountain stops below the stamp */}
+        <Diwali />
       </div>
     </main>
   );

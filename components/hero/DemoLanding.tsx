@@ -21,6 +21,7 @@ const SiteFooter = dynamic(() => import("./SiteFooter"));
 /* these two render nothing until the page is up, so they need no server render at all */
 const LenisScroll = dynamic(() => import("./LenisScroll"), { ssr: false });
 const SupportCard = dynamic(() => import("./SupportCard"), { ssr: false });
+const SponsorCard = dynamic(() => import("@/sponsor/popup/SponsorCard"), { ssr: false });
 
 /**
  * The landing page.
@@ -45,8 +46,12 @@ export default function DemoLanding() {
       </LazyHydrate>
       <SiteRail />
       <LenisScroll />
-      {/* once per visit: Pin UI is open source — a star on GitHub helps */}
-      <SupportCard />
+      {/*
+        Once per visit, the landing's invitation: sponsor Pin UI while
+        sponsoring is on (sponsor/config.ts), and the GitHub star note while
+        it is parked — so there is always one, never two.
+      */}
+      {SPONSOR_ENABLED ? <SponsorCard /> : <SupportCard />}
     </div>
   );
 }
