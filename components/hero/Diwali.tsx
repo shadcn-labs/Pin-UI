@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePinTheme } from "@/lib/theme";
+import { createAnarSound } from "./anarSound";
 import "./diwali.css";
 
 /**
@@ -24,7 +25,8 @@ import "./diwali.css";
  * release it springs home on a CSS curve — so carrying it never waits on a
  * render. The sparks are one canvas, drawn only while there is fire or a
  * flame in the hand. With the keyboard, Enter or Space on the diya lights the
- * anar. Light and crimson both: sparks add up as light on the dark face and
+ * anar. It sounds like one too (anarSound.ts): the fuse spits as it catches,
+ * then a hiss and a roar with sparks crackling over them, fading as it dies. Light and crimson both: sparks add up as light on the dark face and
  * are drawn as fire on the light one.
  */
 
@@ -113,9 +115,12 @@ export default function Diwali() {
     let charge = 0;
     let resetTimer = 0;
     const sparks: Spark[] = [];
+    /* the anar's sound (anarSound.ts): built on the first gesture, silent until then */
+    const sound = createAnarSound();
 
     const ignite = () => {
       if (state !== "ready") return;
+      sound.engine()?.ignite();
       state = "burning";
       burnT = 0;
       charge = 0;
@@ -165,6 +170,8 @@ export default function Diwali() {
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
       e.preventDefault();
+      /* picking the diya up is the gesture that lets the page make a sound */
+      sound.wake();
       /* keep every move on the diya, even when the pointer outruns it; a pointer already gone cannot be captured */
       try {
         diya.setPointerCapture(e.pointerId);
@@ -224,6 +231,7 @@ export default function Diwali() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Enter" && e.key !== " ") return;
       e.preventDefault();
+      sound.wake();
       ignite();
     };
 
@@ -293,6 +301,7 @@ export default function Diwali() {
         if (d < reach) charge += dt / CATCH;
         else charge = Math.max(0, charge - dt * 3);
         anar.style.setProperty("--charge", charge.toFixed(3));
+        sound.engine()?.catching(charge, dt);
         if (charge >= 1) ignite();
       }
 
@@ -303,7 +312,9 @@ export default function Diwali() {
         anar.style.setProperty("--burn", strength.toFixed(3));
         root.style.setProperty("--burn", strength.toFixed(3));
         emit(Math.round((still.matches ? 110 : 380) * strength * dt + Math.random()), g, scale);
+        sound.engine()?.roar(strength, dt);
         if (burnT >= BURN) {
+          sound.engine()?.stop();
           state = "spent";
           anar.dataset.state = "spent";
           anar.style.setProperty("--burn", "0");
@@ -405,9 +416,18 @@ export default function Diwali() {
       raf = requestAnimationFrame(frameStep);
     }
 
+    /* a hidden tab holds the frames, so the roar would hang on one note: hush it until the page is back */
+    const onVisibility = () => {
+      if (document.hidden) sound.engine()?.roar(0, 0);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(resetTimer);
+      document.removeEventListener("visibilitychange", onVisibility);
+      sound.engine()?.stop();
+      sound.engine()?.dispose();
       ro.disconnect();
       diya.removeEventListener("pointerdown", onDown);
       diya.removeEventListener("pointermove", onMove);
