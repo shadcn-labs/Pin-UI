@@ -46,6 +46,7 @@ const DeskComputer = dynamic(() => import("./DeskComputer"));
 const LiquidVoice = dynamic(() => import("./LiquidVoice"));
 const SelectionList = dynamic(() => import("./SelectionList"));
 const SearchCard = dynamic(() => import("./SearchCard"));
+const ReaderCard = dynamic(() => import("./ReaderCard"));
 
 /**
  * The stage — Figma 345:21.
@@ -153,6 +154,7 @@ export default function WorkbenchStage({
           {entry.slug === "task-card" && <TaskCard theme={theme} />}
           {entry.slug === "selection-list" && <SelectionList theme={theme} />}
           {entry.slug === "search-card" && <SearchCard theme={theme} />}
+          {entry.slug === "reader-card" && <ReaderCard theme={theme} fill />}
           {/* ⌘V on the pad pastes the copied theme into the site's own switch */}
           {entry.slug === "copy-paste-pad" && (
             <CopyPastePad

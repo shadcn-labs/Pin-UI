@@ -163,6 +163,47 @@ export type Entry = {
 
 const ENTRIES: Entry[] = [
   {
+    slug: "reader-card",
+    category: "cards",
+    name: "Reader Card",
+    tagline: "A story card that scrolls in place and morphs into a liquid-glass reader.",
+    blurb:
+      "A small page of a story, set in a serif under a progressive blur at both edges, that you can scroll right there on the card. Press Open and the card's own surface grows into a frosted glass reader, already on the passage you were reading, with those lines flashing once so the eye finds its place. The close button and the toolbar are real liquid glass that bends the light drifting behind them; the type steps up and down without losing your place, and it folds back into the card.",
+    highlights: ["Morphs into the reader", "Opens on your passage", "Refracting liquid glass", "Type size keeps your place"],
+    /* the dark half of the recording of the live card, at 960px and 30fps: it opens on its passage, is read and resized, and folds back into the card */
+    clip: "/clips/loop/reader-card.mp4",
+    poster: "/clips/loop/reader-card.jpg",
+    sound: false,
+    zoom: 1,
+    stage: "#dcdcdc",
+    clipStage: "#0e0e10",
+    stageDark: "#0e0e10",
+    /* a scene: the ambient light fills the stage and the reader opens across it */
+    fill: true,
+    usage: `import ReaderCard from "@/components/library/ReaderCard";
+
+<ReaderCard theme={theme} onOpenChange={(open) => console.log(open)} />`,
+    props: [
+      { name: "theme", type: "\"light\" | \"dark\"", fallback: "\"light\"", note: "A pale card and frosted panel over warm pastel light, or a graphite card over deep red and blue. The glass, the blur bands and the highlight follow it." },
+      { name: "fill", type: "boolean", fallback: "false", note: "Take the container's whole box. Without it the scene is 640px tall with rounded corners. Either way the reader opens inside the scene, never over the page." },
+      { name: "onOpenChange", type: "(open: boolean) => void", note: "Called once the reader has opened, and as soon as it starts to close." },
+    ],
+    files: [
+      { name: "ReaderCard.tsx", lang: "tsx" },
+      { name: "reader-card-glass.ts", lang: "tsx" },
+      { name: "reader-card.css", lang: "css" },
+    ],
+    info: {
+      paragraphs: [
+        "The card is a 289px page that scrolls with the wheel or a finger, under progressive blur bands: four stacked backdrop filters at both edges, each masked to its own band, so the text sinks out of focus as it reaches the title and the Open pill. Opening it never re-lays out anything. The reader always sits at its final size, and only a clip-path springs between the card's box and the panel's, with a copy of the card's face fading out on top. The text never re-wraps mid-flight, and every frame is clip, opacity and transform on the compositor.",
+        "The glass follows a Snell's-law bevel: the depth inside each rounded edge is turned into a refraction angle and baked into a displacement map, which an SVG filter applies to the backdrop with red, green and blue split a little apart. A fresnel rim and an angled glare are baked into a light overlay. The big panel uses the browser's own blur with the same baked light instead, since refraction is invisible over a blurred backdrop. All of it is baked while the page is idle, and switched on under an opaque sheet once the morph has stopped, so its first paint is never seen.",
+        "It opens on the passage the card was showing, and those lines flash once. The two A buttons step the type through five sizes while holding your place, and a bar and a percentage follow your progress. Focus stays inside while it is open, and Escape, the scrim or the close button fold it back into the card, even halfway through opening. With reduced motion it simply appears and goes.",
+      ],
+      credit: { label: "glass after liquid-glass-studio", href: "https://github.com/iyinchao/liquid-glass-studio" },
+    },
+    origin: { label: "Folder · reader card" },
+  },
+  {
     slug: "search-card",
     category: "controls",
     name: "Search Card",

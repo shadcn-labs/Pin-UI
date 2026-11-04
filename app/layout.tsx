@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
-import { Caveat, Manrope } from "next/font/google";
+import { Caveat, Manrope, Newsreader, Tinos } from "next/font/google";
 import { LINKS } from "@/lib/links";
 import { SITE_URL } from "@/lib/site";
 import FaviconSync from "@/components/FaviconSync";
@@ -27,6 +27,30 @@ import "./globals.css";
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
+  display: "swap",
+  preload: false,
+});
+
+/*
+ * Newsreader is the Reader Card's book face, with its optical-size axis so the
+ * titles and the body text are each cut for their size; Tinos, metric-equal
+ * to Times New Roman, sets the card's excerpt where the system has no Times.
+ * Like Manrope, both are exposed as variables and not preloaded, so only the
+ * pages that draw the card download them.
+ */
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
+  variable: "--font-newsreader",
+  display: "swap",
+  preload: false,
+});
+
+const tinos = Tinos({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-tinos",
   display: "swap",
   preload: false,
 });
@@ -150,7 +174,7 @@ export default function RootLayout({
     /* rendered in the default (dark) face, so the HTML is dark even before — or without — the script */
     <html
       lang="en"
-      className={`${manrope.variable} ${scribble.variable}`}
+      className={`${manrope.variable} ${newsreader.variable} ${tinos.variable} ${scribble.variable}`}
       data-pin-theme={DEFAULT_THEME}
       data-scroll-behavior="smooth"
       suppressHydrationWarning

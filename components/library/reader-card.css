@@ -1,0 +1,814 @@
+/* ===========================================================================
+   Reader Card.
+
+   A scene: a drifting ambient light, the 289×290 story card in the middle of
+   it, and the reader that grows out of the card. The reader always sits at
+   its final size inside .prc__bounds and only its clip-path moves, so nothing
+   here re-lays out mid-morph. Every colour is a token; the dark set swaps in
+   on data-theme="dark". The glass itself is baked by reader-card-glass.ts and
+   styled here through .prc-lg and its sheen.
+=========================================================================== */
+
+.prc {
+  --prc-page: #dcdcdc;
+  --prc-card: #f7f7f7;
+  --prc-rim: rgb(255 255 255 / 0.28);
+  --prc-title: #000;
+  --prc-ink-card: #4a4a4a;
+  --prc-ink: #2b2b2b;
+  --prc-muted: #8a8a8a;
+  --prc-accent: #d3343c;
+  --prc-glass-tint: rgb(255 255 255 / 0.22);
+  --prc-glass-ink: #111;
+  --prc-glass-shadow: 0 8px 22px -6px rgb(0 0 0 / 0.22), 0 1px 2px rgb(0 0 0 / 0.08);
+  --prc-panel-tint: rgb(250 250 250 / 0.66);
+  --prc-panel-solid: #f7f7f7;
+  --prc-scrim: rgb(205 205 205 / 0.35);
+  --prc-track: rgb(0 0 0 / 0.1);
+  --prc-hover: rgb(0 0 0 / 0.06);
+  --prc-orb-a: #f4b6a0;
+  --prc-orb-b: #a9c4f2;
+  --prc-orb-c: #f3dd9b;
+  --prc-orb-opacity: 0.55;
+  --prc-mark: rgb(211 52 60 / 0.16);
+  --prc-sheen: 1;
+
+  --prc-serif: var(--font-newsreader, "Newsreader"), Georgia, "Times New Roman", serif;
+  --prc-times: "Times New Roman", var(--font-tinos, "Tinos"), Times, serif;
+  --prc-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  position: relative;
+  width: 100%;
+  height: 640px;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 28px;
+  /* the orbs are sized against the scene, not the window */
+  container-type: size;
+  background: var(--prc-page);
+  color: var(--prc-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.4s ease;
+}
+
+.prc[data-fill] {
+  height: 100%;
+  border-radius: 0;
+}
+
+.prc[data-theme="dark"] {
+  --prc-page: #0e0e10;
+  --prc-card: #1b1b1e;
+  --prc-rim: rgb(255 255 255 / 0.07);
+  --prc-title: #f4f4f5;
+  --prc-ink-card: #b4b4b9;
+  --prc-ink: #d6d6da;
+  --prc-muted: #8b8b92;
+  --prc-accent: #ff5a60;
+  --prc-glass-tint: rgb(40 40 46 / 0.22);
+  --prc-glass-ink: #f4f4f5;
+  --prc-glass-shadow: 0 10px 26px -6px rgb(0 0 0 / 0.6), 0 1px 2px rgb(0 0 0 / 0.4);
+  --prc-panel-tint: rgb(24 24 28 / 0.66);
+  --prc-panel-solid: #1b1b1e;
+  --prc-scrim: rgb(0 0 0 / 0.35);
+  --prc-track: rgb(255 255 255 / 0.14);
+  --prc-hover: rgb(255 255 255 / 0.08);
+  --prc-orb-a: #6b1d24;
+  --prc-orb-b: #1c2e66;
+  --prc-orb-c: #3b2a10;
+  --prc-orb-opacity: 0.7;
+  --prc-mark: rgb(255 90 96 / 0.2);
+  --prc-sheen: 0.55;
+}
+
+/* a reset of its own, at no specificity, so the component reads the same in any project */
+.prc *,
+.prc *::before,
+.prc *::after {
+  box-sizing: border-box;
+}
+
+:where(.prc) :where(p, h2, article, header, mark) {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+:where(.prc) :where(button) {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+:where(.prc) :where(svg) {
+  display: block;
+}
+
+/* ── ambient light: soft pools drawn as gradients, cheap to move ───────── */
+.prc__ambient {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.prc__orb {
+  position: absolute;
+  width: 64cqmax;
+  height: 64cqmax;
+  border-radius: 50%;
+  opacity: var(--prc-orb-opacity);
+  will-change: transform;
+  animation: prc-drift-a 20s ease-in-out infinite alternate;
+  transition: opacity 0.4s ease;
+}
+
+.prc__orb--a {
+  left: -2%;
+  top: -10%;
+  background: radial-gradient(closest-side, var(--prc-orb-a), transparent);
+}
+
+.prc__orb--b {
+  right: -12%;
+  top: 18%;
+  background: radial-gradient(closest-side, var(--prc-orb-b), transparent);
+  animation-name: prc-drift-b;
+  animation-duration: 25s;
+}
+
+.prc__orb--c {
+  left: 22%;
+  bottom: -34%;
+  background: radial-gradient(closest-side, var(--prc-orb-c), transparent);
+  animation-name: prc-drift-c;
+  animation-duration: 30s;
+}
+
+/* the light holds still while the reader is open: the glass then has nothing to re-filter */
+.prc[data-open] .prc__orb {
+  animation-play-state: paused;
+}
+
+@keyframes prc-drift-a {
+  to {
+    transform: translate(60px, 40px) scale(1.08);
+  }
+}
+
+@keyframes prc-drift-b {
+  to {
+    transform: translate(-50px, 30px) scale(1.08);
+  }
+}
+
+@keyframes prc-drift-c {
+  to {
+    transform: translate(40px, -50px) scale(1.08);
+  }
+}
+
+.prc__stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+/* ── liquid glass, filled in by reader-card-glass.ts ───────────────────── */
+.prc .prc-lg {
+  isolation: isolate;
+  background: var(--prc-glass-tint);
+  box-shadow: var(--prc-glass-shadow);
+  color: var(--prc-glass-ink);
+}
+
+.prc .prc-lg__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-size: 100% 100%;
+  opacity: var(--prc-sheen);
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* ── the card ──────────────────────────────────────────────────────────── */
+.prc__card {
+  position: relative;
+  width: 289px;
+  height: 290px;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 40px;
+  background: var(--prc-card);
+  box-shadow: 0 0 0 1px var(--prc-rim);
+  opacity: 0;
+  transition: background-color 0.4s ease;
+}
+
+.prc__content {
+  position: absolute;
+  inset: 0;
+}
+
+.prc__title {
+  position: absolute;
+  top: 24.5px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  text-align: center;
+  font-family: var(--prc-serif);
+  font-variation-settings: "opsz" 24;
+  font-size: 22.6px;
+  line-height: 28px;
+  letter-spacing: 0.006em;
+  color: var(--prc-title);
+  pointer-events: none;
+}
+
+.prc__excerpt {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  padding: 72.5px 0 118px 23px;
+  font-family: var(--prc-times);
+  font-size: 15.9px;
+  line-height: 23px;
+  color: var(--prc-ink-card);
+  outline: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prc__excerpt::-webkit-scrollbar {
+  display: none;
+}
+
+.prc__excerpt:focus-visible {
+  border-radius: 40px;
+  box-shadow: inset 0 0 0 2px var(--prc-accent);
+}
+
+.prc__lines span {
+  display: block;
+  white-space: nowrap;
+}
+
+.prc__wrap {
+  width: 243px;
+  text-indent: 1.1em;
+}
+
+.prc__wrap:first-child,
+.prc__cont {
+  text-indent: 0;
+}
+
+/* progressive blur: stacked backdrop filters, each masked to its own band */
+.prc__pblur {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.prc__pblur > i {
+  position: absolute;
+  inset: 0;
+}
+
+.prc__pblur--top {
+  top: 0;
+  height: 102px;
+}
+
+.prc__pblur--top > i:nth-child(1) {
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  mask-image: linear-gradient(to top, transparent 0%, #000 8%);
+}
+
+.prc__pblur--top > i:nth-child(2) {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  mask-image: linear-gradient(to top, transparent 5%, #000 15%);
+}
+
+.prc__pblur--top > i:nth-child(3) {
+  -webkit-backdrop-filter: blur(3.5px);
+  backdrop-filter: blur(3.5px);
+  mask-image: linear-gradient(to top, transparent 10%, #000 22%);
+}
+
+.prc__pblur--top > i:nth-child(4) {
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  mask-image: linear-gradient(to top, transparent 18%, #000 30%);
+}
+
+.prc__pblur--bottom {
+  bottom: 0;
+  height: 94px;
+}
+
+.prc__pblur--bottom > i:nth-child(1) {
+  -webkit-backdrop-filter: blur(0.6px);
+  backdrop-filter: blur(0.6px);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
+}
+
+.prc__pblur--bottom > i:nth-child(2) {
+  -webkit-backdrop-filter: blur(1.3px);
+  backdrop-filter: blur(1.3px);
+  mask-image: linear-gradient(to bottom, transparent 22%, #000 42%);
+}
+
+.prc__pblur--bottom > i:nth-child(3) {
+  -webkit-backdrop-filter: blur(2.4px);
+  backdrop-filter: blur(2.4px);
+  mask-image: linear-gradient(to bottom, transparent 40%, #000 60%);
+}
+
+.prc__pblur--bottom > i:nth-child(4) {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  mask-image: linear-gradient(to bottom, transparent 58%, #000 80%);
+}
+
+.prc__fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.prc__fade--top {
+  top: 0;
+  height: 104px;
+  background: linear-gradient(
+    to bottom,
+    var(--prc-card) 0%,
+    color-mix(in srgb, var(--prc-card) 98%, transparent) 64%,
+    color-mix(in srgb, var(--prc-card) 72%, transparent) 82%,
+    transparent 100%
+  );
+}
+
+.prc__fade--bottom {
+  bottom: 0;
+  height: 96px;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--prc-card) 92%, transparent) 0%,
+    color-mix(in srgb, var(--prc-card) 70%, transparent) 40%,
+    transparent 100%
+  );
+}
+
+/* ── the glass pill on the card ────────────────────────────────────────── */
+.prc__open {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  height: 40px;
+  margin-inline: auto;
+  padding: 0 18px 0 20px;
+  border-radius: 999px;
+  outline: none;
+  opacity: 0;
+}
+
+.prc__openLabel {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--prc-serif);
+  font-variation-settings: "opsz" 20;
+  font-size: 19.5px;
+  line-height: 1;
+  letter-spacing: -0.005em;
+}
+
+.prc__openLabel svg {
+  opacity: 0.75;
+}
+
+.prc__open:focus-visible,
+.prc__close:focus-visible,
+.prc__tool:focus-visible {
+  outline: 2px solid var(--prc-accent);
+  outline-offset: 3px;
+}
+
+/* ── the room the reader opens into ────────────────────────────────────── */
+.prc__bounds {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  /* a host with something floating at the foot (a toolbar, a dock) raises this */
+  bottom: var(--prc-inset-bottom, 24px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@container (max-width: 559px) {
+  .prc__bounds {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: var(--prc-inset-bottom, 8px);
+  }
+}
+
+/* ── scrim and reader ──────────────────────────────────────────────────── */
+.prc__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: var(--prc-scrim);
+  will-change: opacity;
+}
+
+.prc__scrim[hidden] {
+  display: none;
+}
+
+.prc__reader {
+  position: absolute;
+  z-index: 50;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 40px;
+  box-shadow: inset 0 0 0 1px var(--prc-rim);
+  outline: none;
+  contain: layout paint style;
+  will-change: clip-path;
+}
+
+.prc__reader[data-state="closed"] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* while the box is moving every backdrop filter is off: the panel is a solid sheet, a cheap clip repaint */
+.prc__reader.is-morphing .prc__glass {
+  display: none;
+}
+
+.prc__reader.is-morphing .prc__inner .prc__pblur {
+  visibility: hidden;
+}
+
+.prc__shadow {
+  position: absolute;
+  z-index: 49;
+  border-radius: 40px;
+  box-shadow:
+    0 40px 80px -30px rgb(0 0 0 / 0.35),
+    0 0 0 1px var(--prc-rim);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.prc__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.prc .prc__glass.prc-lg {
+  background: var(--prc-panel-tint);
+  box-shadow: none;
+}
+
+.prc__solid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--prc-panel-solid);
+  pointer-events: none;
+}
+
+.prc__previewHost {
+  display: contents;
+}
+
+.prc__preview {
+  position: absolute;
+  z-index: 2;
+  width: 289px;
+  height: 290px;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.prc__inner {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  will-change: opacity, transform;
+}
+
+.prc__scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 118px clamp(22px, 8%, 64px) 132px;
+  outline: none;
+  scrollbar-width: none;
+}
+
+.prc__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.prc__scroll:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--prc-accent);
+}
+
+.prc__prose {
+  max-width: 34em;
+  margin: 0 auto;
+  font-family: var(--prc-serif);
+  font-variation-settings: "opsz" 16;
+  font-size: var(--prc-size, 19px);
+  line-height: 1.68;
+  color: var(--prc-ink);
+  hanging-punctuation: first;
+  text-wrap: pretty;
+  transition: font-size 0.25s ease;
+}
+
+.prc__prose p + p {
+  margin-top: 0.85em;
+}
+
+.prc__prose em {
+  font-style: italic;
+}
+
+.prc__chapter {
+  margin-bottom: 1.6em;
+  text-align: center;
+  font-family: var(--prc-sans);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--prc-muted);
+}
+
+.prc__dropcap::first-letter {
+  float: left;
+  padding: 0.07em 0.08em 0 0;
+  font-size: 3.4em;
+  line-height: 0.82;
+  color: var(--prc-title);
+}
+
+.prc__prose .prc__end {
+  margin-top: 1.8em;
+  text-align: center;
+  color: var(--prc-muted);
+}
+
+.prc__resume {
+  padding: 0.05em 0;
+  border-radius: 3px;
+  background: var(--prc-mark);
+  color: inherit;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.prc__resume.is-flash {
+  animation: prc-resume-flash 2.4s ease-out;
+}
+
+@keyframes prc-resume-flash {
+  0%,
+  25% {
+    background: color-mix(in srgb, var(--prc-accent) 34%, transparent);
+  }
+  100% {
+    background: var(--prc-mark);
+  }
+}
+
+.prc__pblur--readerTop {
+  height: 108px;
+}
+
+.prc__pblur--readerBottom {
+  height: 120px;
+}
+
+.prc__rfade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.prc__rfade--top {
+  top: 0;
+  height: 112px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--prc-panel-solid) 88%, transparent) 0%,
+    color-mix(in srgb, var(--prc-panel-solid) 80%, transparent) 55%,
+    transparent 100%
+  );
+}
+
+.prc__rfade--bottom {
+  bottom: 0;
+  height: 120px;
+  background: linear-gradient(to top, color-mix(in srgb, var(--prc-panel-solid) 80%, transparent) 0%, transparent 100%);
+}
+
+.prc__head {
+  position: absolute;
+  z-index: 10;
+  top: 26px;
+  left: 72px;
+  right: 72px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.prc__rtitle {
+  font-family: var(--prc-serif);
+  font-variation-settings: "opsz" 24;
+  font-size: 22.6px;
+  line-height: 28px;
+  color: var(--prc-title);
+}
+
+.prc__meta {
+  margin-top: 4px;
+  font-family: var(--prc-sans);
+  font-size: 12.5px;
+  color: var(--prc-muted);
+}
+
+.prc__close {
+  position: absolute;
+  z-index: 20;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+}
+
+.prc__close svg {
+  position: relative;
+  z-index: 1;
+}
+
+.prc__toolbar {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: fit-content;
+  height: 48px;
+  margin-inline: auto;
+  padding: 0 14px 0 6px;
+  border-radius: 24px;
+}
+
+.prc__toolbar > * {
+  position: relative;
+  z-index: 1;
+}
+
+.prc__tool {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 19px;
+  transition: background-color 0.15s;
+}
+
+@media (hover: hover) {
+  .prc__tool:hover {
+    background: var(--prc-hover);
+  }
+}
+
+.prc__tool:disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: none;
+}
+
+.prc__toolA {
+  font-family: var(--prc-serif);
+  line-height: 1;
+}
+
+.prc__toolA--sm {
+  font-size: 14px;
+}
+
+.prc__toolA--lg {
+  font-size: 20px;
+}
+
+.prc__sep {
+  width: 1px;
+  height: 20px;
+  margin: 0 10px 0 8px;
+  background: var(--prc-track);
+}
+
+.prc__progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prc__progressTrack {
+  position: relative;
+  width: 76px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--prc-track);
+}
+
+.prc__progressFill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--prc-accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.prc__progressText {
+  min-width: 34px;
+  font-family: var(--prc-sans);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--prc-glass-ink);
+}
+
+@container (max-width: 520px) {
+  .prc__head {
+    left: 64px;
+    right: 64px;
+  }
+
+  .prc__rtitle {
+    font-size: 19px;
+    line-height: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prc__card,
+  .prc__open {
+    opacity: 1;
+  }
+
+  .prc__orb {
+    animation: none;
+  }
+
+  .prc__prose {
+    transition: none;
+  }
+}

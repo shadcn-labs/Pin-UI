@@ -70,6 +70,8 @@ const FACES: Record<string, string | null> = {
   "liquid-voice": null,
   "selection-list": "Inter Tight (500)",
   "search-card": "Inter (400 to 600)",
+  "reader-card":
+    "Newsreader (variable, with its optical-size axis, and italic) for the titles and the reader, Times New Roman for the card's excerpt (Tinos where it is missing) and Inter for the small labels. The stylesheet reads --font-newsreader and --font-tinos when they are set, as next/font sets them, and otherwise falls back to faces named \"Newsreader\" and \"Tinos\"",
   "copy-paste-pad": "Inter (400 and 500) for the overlays, with Varela Round for the keycap legends (Arial Rounded where it is missing)",
 };
 
@@ -166,6 +168,13 @@ function docsFor(entry: Entry): string {
     lines.push(
       "",
       "The glass is drawn in WebGL 2; without it the component falls back to a CSS gradient and backdrop-filter glass on its own. There is no microphone: the waveform is generated. Wire onSend and onCancel to your own recorder if you need real audio. Pass fill to have the sky take its container's whole box.",
+    );
+  }
+
+  if (entry.slug === "reader-card") {
+    lines.push(
+      "",
+      "reader-card-glass.ts is the liquid glass and must sit beside the component. The full refraction is a backdrop-filter: url() SVG filter, which only Chromium renders; Safari and Firefox get a frosted glass with the same baked rim light on their own. The reader opens inside the scene rather than over your page, so give the scene the room you want the panel to take, or pass fill. If something floats over its foot, set --prc-inset-bottom on a parent to keep the panel above it. Its story is built in: swap the text in ReaderCard.tsx for your own, keeping the excerpt's first passage and the marked lines in step with the card's.",
     );
   }
 
