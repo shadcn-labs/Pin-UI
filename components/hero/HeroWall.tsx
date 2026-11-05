@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
-import { LIBRARY, thumbOf } from "../library/registry";
+import { LIBRARY, thumbOf, wallOf } from "../library/registry";
 
 /**
  * The wall of recordings behind the hero's claim — Figma 501:915.
@@ -234,7 +234,7 @@ export default function HeroWall() {
                       {(
                         <video
                           className="hwall__media hwall__clip"
-                          data-src={entry.clip}
+                          data-src={wallOf(entry.clip!)}
                           muted
                           playsInline
                           loop

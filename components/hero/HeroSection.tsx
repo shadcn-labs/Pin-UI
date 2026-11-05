@@ -49,16 +49,13 @@ export default function HeroSection() {
       <div className="hero__frame">
         <HeroWall />
         {/* fairy lights strung over the wall and hung clear above the claim — a click on the hero changes their pattern */}
-        <FairyLights clear=".hero__center" ignore=".diwali" />
+        <FairyLights clear=".hero__center > *" ignore=".diwali" />
         {/*
           The wall softens into the frame's foot rather than stopping at it: a
-          progressive blur, six layers each starting lower and blurring twice
-          as hard, so there is no line where it begins.
+          progressive blur, three layers each starting lower and blurring
+          harder, so there is no line where it begins.
         */}
         <div className="hero__haze" aria-hidden="true">
-          <span />
-          <span />
-          <span />
           <span />
           <span />
           <span />

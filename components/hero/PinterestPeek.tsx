@@ -10,7 +10,7 @@ import {
   useReducedMotion,
   useSpring,
 } from "motion/react";
-import { LIBRARY, thumbOf } from "../library/registry";
+import { LIBRARY, thumbOf, wallOf } from "../library/registry";
 import { LINKS } from "@/lib/links";
 import { softSpring, spring } from "@/lib/motion";
 import "./peek.css";
@@ -202,7 +202,7 @@ export default function PinterestPeek({
                     >
                       <video
                         className="peek__video"
-                        src={entry.clip}
+                        src={wallOf(entry.clip!)}
                         poster={thumbOf(entry.poster)}
                         /*
                          * A shade tighter than the shelf uses. These tiles are

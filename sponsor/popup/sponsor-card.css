@@ -389,12 +389,21 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 0;
+  width: 100%;
   border-radius: 0 999px 999px 0;
   background: linear-gradient(90deg, rgb(255 255 255 / 0.7), #ffffff 85%);
   box-shadow:
     0 0 8px rgb(255 255 255 / 0.55),
     0 0 2px rgb(255 255 255 / 0.9);
+  /*
+   * The line grows by a clip, not by its width: a clip-path animation runs on
+   * the compositor, where a width animation re-laid out and repainted the bar
+   * every frame for as long as the card was up. The clip reaches 10px past
+   * the bar on every side so the glow is kept, and its rounded right corners
+   * are the line's rounded leading end.
+   */
+  clip-path: inset(-10px 100% -10px -10px round 0 999px 999px 0);
+  will-change: clip-path;
   animation: spk-fill var(--spk-cycle, 3.4s) linear var(--spk-wait, 0s) forwards;
 }
 
@@ -410,7 +419,7 @@
 
 @keyframes spk-fill {
   to {
-    width: 100%;
+    clip-path: inset(-10px -10px -10px -10px round 0 999px 999px 0);
   }
 }
 

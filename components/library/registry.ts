@@ -1303,6 +1303,18 @@ export function thumbOf(poster: string): string {
   return poster.replace(/^\/clips\/loop\/([^/?]+)\.jpg/, "/clips/thumb/$1.webp");
 }
 
+/**
+ * The small-tile copy of a loop: "/clips/loop/x.mp4" → "/clips/wall/x.mp4".
+ * The hero wall plays up to two dozen tiles at once at about 340px and the
+ * Pinterest peek smaller still, so both play these 640×360 copies — under half
+ * the pixels to decode each frame and about a third of the bytes. The shelf
+ * and the component pages keep the 960px loops. scripts/make-wall-clips.py
+ * makes them.
+ */
+export function wallOf(clip: string): string {
+  return clip.replace(/^\/clips\/loop\//, "/clips/wall/");
+}
+
 /** The library, newest first, with "New" set on the ones the landing page shows. */
 export const LIBRARY: Entry[] = ENTRIES.map((entry, i) => ({ ...entry, isNew: i < LANDING_SHOWN }));
 

@@ -174,6 +174,27 @@ function haloSprite(color: RGB): HTMLCanvasElement {
   return c;
 }
 
+/*
+ * Where an element sits from the frame's top as laid out, without the
+ * transforms on it: the hero's badge and claim rise into place, and measured
+ * mid-rise they would read lower than where they come to rest, letting the
+ * lights hang into them once they land.
+ */
+function layoutTop(el: HTMLElement, frame: HTMLElement): number {
+  let y = 0;
+  let node: HTMLElement | null = el;
+  while (node && node !== frame) {
+    y += node.offsetTop;
+    const parent = node.offsetParent as HTMLElement | null;
+    /* the frame is not on this chain (a positioned box outside it): fall back to the boxes on screen */
+    if (!parent || (parent !== frame && !frame.contains(parent))) {
+      return el.getBoundingClientRect().top - frame.getBoundingClientRect().top;
+    }
+    node = parent;
+  }
+  return y;
+}
+
 type FairyLightsProps = {
   /* clicks inside this (a component on a stage) are left to it, not taken as a change of pattern */
   ignore?: string;
@@ -211,6 +232,8 @@ export default function FairyLights({ ignore, clear, band, over }: FairyLightsPr
     const still = matchMedia("(prefers-reduced-motion: reduce)");
     let w = 0;
     let h = 0;
+    /* the canvas's own height: only the band the canopy can reach, not the whole frame */
+    let ch = 0;
     let dpr = 1;
     let canopy = 0;
     let bulbs: Bulb[] = [];
@@ -257,10 +280,6 @@ export default function FairyLights({ ignore, clear, band, over }: FairyLightsPr
       h = frame.clientHeight;
       if (!w || !h) return;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
       /* the canopy hangs over the top of the frame */
       canopy = Math.min(h * (band ?? 0.42), w * 0.62);
       const spacing = clamp(w / 46, 20, 32);
@@ -270,16 +289,38 @@ export default function FairyLights({ ignore, clear, band, over }: FairyLightsPr
        * the canopy is made shallow enough that its deepest strand fits.
        */
       if (clear) {
-        const target = frame.querySelector(clear);
-        if (target) {
-          const box = target.getBoundingClientRect();
-          const top = box.top - frame.getBoundingClientRect().top;
+        /*
+         * The highest of everything the selector matches, ignoring anything
+         * not laid out. The hero asks for the centre block's children, not the
+         * block: on a phone the block is a full-height box from the frame's
+         * top, and its own edge would leave the lights no room at all, while
+         * what it holds — the badge — starts well below the masthead.
+         */
+        let top = Infinity;
+        frame.querySelectorAll<HTMLElement>(clear).forEach((el) => {
+          if (el.offsetWidth > 0 && el.offsetHeight > 0) top = Math.min(top, layoutTop(el, frame));
+        });
+        if (top !== Infinity) {
           const scaleNow = clamp(w / 1280, 0.7, 1.25);
           const { neck, glass } = shape(1.75, scaleNow);
           const room = top - 18 - neck - glass;
           canopy = Math.min(canopy, Math.max(0, room / DEEPEST));
         }
       }
+      /*
+       * The canvas covers only the band the lights can reach — the deepest
+       * strand with room for its swing, the longest bulb hanging from it and
+       * that bulb's halo — rather than the whole frame. Every frame clears and
+       * hands the compositor this canvas, and a full-frame one at 2x is ~8M
+       * pixels of which the lights use a third.
+       */
+      const sizeNow = clamp(w / 1280, 0.7, 1.25);
+      const hang = shape(1.75, sizeNow);
+      ch = canopy < 36 ? 1 : Math.min(h, Math.ceil(canopy * DEEPEST * 1.15 + hang.neck + hang.glass + 32 * sizeNow));
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.max(1, Math.round(ch * dpr));
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${ch}px`;
       /* no room for a canopy worth the name: no lights, rather than a crushed string */
       if (canopy < 36) {
         bulbs = [];
@@ -341,7 +382,7 @@ export default function FairyLights({ ignore, clear, band, over }: FairyLightsPr
       const m = MODES[mode];
       const scale = clamp(w / 1280, 0.7, 1.25);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
+      ctx.clearRect(0, 0, w, ch);
 
       /* the swing: a damped spring per strand, with a slow idle sway under it */
       for (let k = 0; k < swing.length; k++) {
@@ -511,6 +552,15 @@ export default function FairyLights({ ignore, clear, band, over }: FairyLightsPr
      * moment) can never leave the lights stuck dark. Out of view it draws
      * nothing and lets time stand still.
      */
+    /*
+     * Left alone, the string only twinkles and sways, slow enough that 30
+     * frames a second is indistinguishable from 60 — and half the drawing, on
+     * a page where the wall is decoding video at the same time. The moment the
+     * pointer is among the bulbs, a ripple is running or the theme is fading,
+     * it draws every frame again.
+     */
+    let pending = 0;
+    const IDLE_STEP = 1 / 30 - 0.004;
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
       const dt = Math.min((now - last) / 1000, 0.05);
@@ -518,7 +568,11 @@ export default function FairyLights({ ignore, clear, band, over }: FairyLightsPr
       const box = frame.getBoundingClientRect();
       if (box.bottom <= 0 || box.top >= window.innerHeight) return;
       t += dt;
-      draw(dt);
+      pending += dt;
+      const settled = Math.abs(glow - (themeRef.current !== "light" ? 1 : 0)) < 0.002;
+      if (!pointer && !ripple && settled && pending < IDLE_STEP) return;
+      draw(Math.min(pending, 0.05));
+      pending = 0;
     };
 
     /* running unless motion is reduced; a hidden tab is held by the browser itself */
@@ -570,8 +624,7 @@ export default function FairyLights({ ignore, clear, band, over }: FairyLightsPr
     const ro = new ResizeObserver(layout);
     ro.observe(frame);
     /* the element kept clear of can change size on its own (it opens, it reflows): measure again when it does */
-    const watched = clear ? frame.querySelector(clear) : null;
-    if (watched) ro.observe(watched);
+    if (clear) frame.querySelectorAll(clear).forEach((el) => ro.observe(el));
     frame.addEventListener("click", onClick);
     frame.addEventListener("pointermove", onMove);
     frame.addEventListener("pointerleave", onLeave);

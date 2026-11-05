@@ -238,44 +238,29 @@
   mask-image: linear-gradient(to bottom, transparent var(--haze-from), #000 var(--haze-to));
 }
 
-/* the prefixed line first: the CSS pipeline keeps only the last of the pair, and Chrome needs the unprefixed one */
+/*
+ * Three layers, each starting lower and blurring harder. It was six, but the
+ * lowest two (a quarter and half a pixel) could not be seen, and every layer
+ * is a backdrop filter re-run each frame over a wall of playing video.
+ * The prefixed line first: the CSS pipeline keeps only the last of the pair,
+ * and Chrome needs the unprefixed one.
+ */
 .hero__haze span:nth-child(1) {
   --haze-from: 0%;
-  --haze-to: 30%;
-  -webkit-backdrop-filter: blur(0.25px);
-  backdrop-filter: blur(0.25px);
+  --haze-to: 45%;
+  -webkit-backdrop-filter: blur(0.6px);
+  backdrop-filter: blur(0.6px);
 }
 
 .hero__haze span:nth-child(2) {
-  --haze-from: 12%;
-  --haze-to: 45%;
-  -webkit-backdrop-filter: blur(0.5px);
-  backdrop-filter: blur(0.5px);
+  --haze-from: 30%;
+  --haze-to: 75%;
+  -webkit-backdrop-filter: blur(1.4px);
+  backdrop-filter: blur(1.4px);
 }
 
 .hero__haze span:nth-child(3) {
-  --haze-from: 28%;
-  --haze-to: 60%;
-  -webkit-backdrop-filter: blur(0.8px);
-  backdrop-filter: blur(0.8px);
-}
-
-.hero__haze span:nth-child(4) {
-  --haze-from: 44%;
-  --haze-to: 75%;
-  -webkit-backdrop-filter: blur(1.2px);
-  backdrop-filter: blur(1.2px);
-}
-
-.hero__haze span:nth-child(5) {
-  --haze-from: 60%;
-  --haze-to: 90%;
-  -webkit-backdrop-filter: blur(1.8px);
-  backdrop-filter: blur(1.8px);
-}
-
-.hero__haze span:nth-child(6) {
-  --haze-from: 76%;
+  --haze-from: 62%;
   --haze-to: 100%;
   -webkit-backdrop-filter: blur(2.5px);
   backdrop-filter: blur(2.5px);

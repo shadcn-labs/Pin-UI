@@ -47,6 +47,38 @@ const REACH = 0.68;
 const CLEAR = 24;
 const MAX_SPARKS = 1500;
 
+/*
+ * How a spark cools — white-hot, then gold, then orange, then a dull red —
+ * fading as it goes, worked out once into BANDS steps of its life (and one
+ * more for the white flecks a dying spark throws), for the dark and the light
+ * face. On white, fire is drawn deeper so it reads.
+ */
+const BANDS = 24;
+function sparkPalette(dark: boolean): string[] {
+  const out: string[] = [];
+  for (let i = 0; i <= BANDS; i++) {
+    const fleck = i === BANDS;
+    const t = fleck ? 0 : (i + 0.5) / BANDS;
+    let r: number;
+    let g: number;
+    let b: number;
+    if (fleck) [r, g, b] = [255, 248, 230];
+    else if (t < 0.25) [r, g, b] = [255, 246 - t * 200, 210 - t * 600];
+    else if (t < 0.7) [r, g, b] = [255, 196 - (t - 0.25) * 220, 60 - (t - 0.25) * 100];
+    else [r, g, b] = [240 - (t - 0.7) * 180, 96 - (t - 0.7) * 160, 20];
+    if (!dark) {
+      r *= 0.95;
+      g *= 0.72;
+      b *= 0.5;
+    }
+    const alpha = (1 - t) * (dark ? 0.95 : 0.9);
+    out.push(`rgba(${r | 0},${Math.max(0, g) | 0},${Math.max(0, b) | 0},${alpha.toFixed(3)})`);
+  }
+  return out;
+}
+const PALETTE_DARK = sparkPalette(true);
+const PALETTE_LIGHT = sparkPalette(false);
+
 type Spark = {
   x: number;
   y: number;
@@ -248,6 +280,7 @@ export default function Diwali() {
 
     let raf = 0;
     let last = 0;
+    const paths = new Map<number, Path2D>();
 
     const emit = (count: number, g: ReturnType<typeof anarGeometry>, scale: number) => {
       /* the fastest a spark may leave: the speed whose peak is exactly the fountain's reach */
@@ -328,11 +361,17 @@ export default function Diwali() {
         }
       }
 
-      /* the sparks: fly, fall, cool, crackle, and draw themselves as short streaks */
+      /*
+       * The sparks: fly, fall, cool, crackle, and draw themselves as short
+       * streaks. A spark's colour and width only ever take a few dozen
+       * distinct values worth telling apart, so the streaks are gathered into
+       * one path per colour band and width and each path is stroked once — a
+       * few dozen strokes a frame rather than one per spark, and no colour
+       * string built per spark.
+       */
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      ctx.globalCompositeOperation = dark ? "lighter" : "source-over";
-      ctx.lineCap = "round";
+      paths.clear();
       for (let i = sparks.length - 1; i >= 0; i--) {
         const s = sparks[i];
         s.age += dt;
@@ -345,7 +384,8 @@ export default function Diwali() {
         s.y += s.vy * dt;
         const t = s.age / s.life;
         if (t >= 1 || s.y > g.base + 6) {
-          sparks.splice(i, 1);
+          sparks[i] = sparks[sparks.length - 1];
+          sparks.pop();
           continue;
         }
         /* a dying spark sometimes throws off a few white flecks */
@@ -367,41 +407,26 @@ export default function Diwali() {
             });
           }
         }
-        /* white-hot, then gold, then orange, then a dull red as it cools */
-        let r: number;
-        let gg: number;
-        let b: number;
-        if (s.fleck) {
-          r = 255;
-          gg = 248;
-          b = 230;
-        } else if (t < 0.25) {
-          r = 255;
-          gg = 246 - t * 200;
-          b = 210 - t * 600;
-        } else if (t < 0.7) {
-          r = 255;
-          gg = 196 - (t - 0.25) * 220;
-          b = 60 - (t - 0.25) * 100;
-        } else {
-          r = 240 - (t - 0.7) * 180;
-          gg = 96 - (t - 0.7) * 160;
-          b = 20;
+        /* its band of the cooling (a fleck is its own band) and its width to a quarter pixel */
+        const band = s.fleck ? BANDS : Math.min(BANDS - 1, (t * BANDS) | 0);
+        const width = Math.max(1, Math.round(s.width * (1 - t * 0.5) * 4));
+        const key = band * 64 + width;
+        let path = paths.get(key);
+        if (!path) {
+          path = new Path2D();
+          paths.set(key, path);
         }
-        if (!dark) {
-          /* on white, fire is drawn deeper so it reads */
-          r *= 0.95;
-          gg *= 0.72;
-          b *= 0.5;
-        }
-        const alpha = (1 - t) * (dark ? 0.95 : 0.9);
-        ctx.strokeStyle = `rgba(${r | 0},${Math.max(0, gg) | 0},${Math.max(0, b) | 0},${alpha.toFixed(3)})`;
-        ctx.lineWidth = s.width * (1 - t * 0.5);
-        ctx.beginPath();
         /* a streak a little longer than the frame's travel, so the fountain reads as motion */
-        ctx.moveTo(s.x - (s.x - s.px) * 2.2, s.y - (s.y - s.py) * 2.2);
-        ctx.lineTo(s.x, s.y);
-        ctx.stroke();
+        path.moveTo(s.x - (s.x - s.px) * 2.2, s.y - (s.y - s.py) * 2.2);
+        path.lineTo(s.x, s.y);
+      }
+      ctx.globalCompositeOperation = dark ? "lighter" : "source-over";
+      ctx.lineCap = "round";
+      const palette = dark ? PALETTE_DARK : PALETTE_LIGHT;
+      for (const [key, path] of paths) {
+        ctx.strokeStyle = palette[(key / 64) | 0];
+        ctx.lineWidth = (key % 64) / 4;
+        ctx.stroke(path);
       }
       ctx.globalCompositeOperation = "source-over";
 
