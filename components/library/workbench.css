@@ -572,6 +572,8 @@
   --pcpp-overlay-bottom: calc(0.8em + 2.857em + 14px);
   /* the Reader Card opens its panel above the bar, not under it */
   --prc-inset-bottom: calc(0.8em + 2.857em + 0.8em);
+  /* the Theme Switch keeps its effect picker above the bar */
+  --pts-inset-bottom: calc(0.8em + 2.857em);
 }
 
 /* the chips are laid out as a wide list, not a card */

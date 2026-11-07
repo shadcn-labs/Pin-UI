@@ -163,6 +163,51 @@ export type Entry = {
 
 const ENTRIES: Entry[] = [
   {
+    slug: "theme-switch",
+    category: "controls",
+    name: "Theme Switch",
+    tagline: "A theme toggle that rains, drips or sets off fireworks to change the theme.",
+    blurb:
+      "A square button with a moon on the light face and a sun on the dark one, and a picker for how it switches. Droplet drops a bead of the next theme onto the icon that splashes and floods out from where it landed. Rain brings a shower that leaves spreading puddles until the whole scene is wet. Diwali sends rockets out from behind the button that burst and bloom into dots until they cover everything, with a whistle, a boom and a crackle.",
+    highlights: ["Droplet, Rain and Diwali", "Real falling and drag physics", "Coverage is computed, not guessed", "Synthesised fireworks"],
+    /* a remocn edit of a frame-exact recording of the live switch: Droplet, Rain and Diwali, then Droplet back to where it began */
+    clip: "/clips/loop/theme-switch.mp4",
+    poster: "/clips/loop/theme-switch.jpg",
+    sound: true,
+    zoom: 1,
+    stage: "#ffffff",
+    clipStage: "#141414",
+    stageDark: "#141414",
+    /* a scene: the effects fill the whole stage */
+    fill: true,
+    /* plain Web Animations, canvas and Web Audio: nothing to install */
+    dependencies: [],
+    usage: `import ThemeSwitch from "@/components/library/ThemeSwitch";
+
+<ThemeSwitch theme={theme} onThemeChange={setTheme} defaultEffect="rain" />`,
+    props: [
+      { name: "theme", type: "\"light\" | \"dark\"", fallback: "\"light\"", note: "The theme the scene shows. A change from outside, such as your own switch, lands at once with no effect." },
+      { name: "onThemeChange", type: "(theme) => void", note: "Called with the new theme the moment a switch has covered the scene. Wire it to your theme to make the button real." },
+      { name: "defaultEffect", type: "\"droplet\" | \"rain\" | \"diwali\"", fallback: "\"droplet\"", note: "Which effect is picked to begin with." },
+      { name: "onEffectChange", type: "(effect) => void", note: "Called when another effect is picked, to remember it if you want to." },
+      { name: "sound", type: "boolean", fallback: "true", note: "Diwali's whistle, boom and crackle, synthesised with Web Audio and panned to each burst. Only ever after a press." },
+      { name: "fill", type: "boolean", fallback: "false", note: "Take the container's whole box. Without it the scene is 480px tall with rounded corners." },
+    ],
+    files: [
+      { name: "ThemeSwitch.tsx", lang: "tsx" },
+      { name: "theme-switch-engine.ts", lang: "tsx" },
+      { name: "theme-switch.css", lang: "css" },
+    ],
+    info: {
+      paragraphs: [
+        "Droplet is real kinematics: the drop enters already falling and accelerates under gravity (s = v₀t + ½gt²), stretching with its speed while keeping its volume. It squashes flat on impact, the button dips and springs back on a spring sampled into a CSS linear() curve, two ripples spread, and the next theme opens from the point of impact as a circle on the compositor. Each control takes the new theme the instant the circle reaches it.",
+        "Rain falls at terminal velocity, slanted by wind, with depth: near drops are faster, longer and brighter. Every drop splashes a crown of droplets under gravity, and the near ones leave organic puddles that spread like liquid wetting a surface. One drop always lands on the button mid-shower, so it changes with the rain. The last merge is worked out before the first drop falls, scaling the puddles by exactly what closes the largest dry gap, so the scene is always covered and never over-run.",
+        "Diwali plans every rocket, burst and star at the press. The shells fly out nearest first, so the show spreads from the button like a wave, and the stars move under air drag and gravity in closed form, so where each one ends is known in advance and full coverage is a guarantee. The whistle, the boom a beat after the flash, and the crackle are synthesised and panned to where each shell bursts. It all happens inside the component's box, a stalled run is finished by a watchdog, and reduced motion simply switches.",
+      ],
+    },
+    origin: { label: "Folder · theme" },
+  },
+  {
     slug: "reader-card",
     category: "cards",
     name: "Reader Card",

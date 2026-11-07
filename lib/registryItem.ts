@@ -70,6 +70,7 @@ const FACES: Record<string, string | null> = {
   "liquid-voice": null,
   "selection-list": "Inter Tight (500)",
   "search-card": "Inter (400 to 600)",
+  "theme-switch": null,
   "reader-card":
     "Newsreader (variable, with its optical-size axis, and italic) for the titles and the reader, Times New Roman for the card's excerpt (Tinos where it is missing) and Inter for the small labels. The stylesheet reads --font-newsreader and --font-tinos when they are set, as next/font sets them, and otherwise falls back to faces named \"Newsreader\" and \"Tinos\"",
   "copy-paste-pad": "Inter (400 and 500) for the overlays, with Varela Round for the keycap legends (Arial Rounded where it is missing)",
@@ -168,6 +169,13 @@ function docsFor(entry: Entry): string {
     lines.push(
       "",
       "The glass is drawn in WebGL 2; without it the component falls back to a CSS gradient and backdrop-filter glass on its own. There is no microphone: the waveform is generated. Wire onSend and onCancel to your own recorder if you need real audio. Pass fill to have the sky take its container's whole box.",
+    );
+  }
+
+  if (entry.slug === "theme-switch") {
+    lines.push(
+      "",
+      "theme-switch-engine.ts is every effect and must sit beside the component. The component switches its own scene; pass onThemeChange to switch your app's theme when the effect lands, and theme to keep the scene in step with your own switch (a change from outside lands at once). Every effect stays inside the component's box, so give it the room you want the rain and the fireworks to fill, or pass fill. Mark any extra control with data-pts-target and it takes the new theme as the flood reaches it. Diwali's sounds are synthesised with Web Audio and only play after a press; pass sound={false} to silence them. With reduced motion it switches at once.",
     );
   }
 

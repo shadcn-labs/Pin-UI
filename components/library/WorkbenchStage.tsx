@@ -47,6 +47,7 @@ const LiquidVoice = dynamic(() => import("./LiquidVoice"));
 const SelectionList = dynamic(() => import("./SelectionList"));
 const SearchCard = dynamic(() => import("./SearchCard"));
 const ReaderCard = dynamic(() => import("./ReaderCard"));
+const ThemeSwitch = dynamic(() => import("./ThemeSwitch"));
 
 /**
  * The stage — Figma 345:21.
@@ -155,6 +156,15 @@ export default function WorkbenchStage({
           {entry.slug === "selection-list" && <SelectionList theme={theme} />}
           {entry.slug === "search-card" && <SearchCard theme={theme} />}
           {entry.slug === "reader-card" && <ReaderCard theme={theme} fill />}
+          {/* the switch is real: once its effect has covered the scene, the site's own theme follows */}
+          {entry.slug === "theme-switch" && (
+            <ThemeSwitch
+              fill
+              theme={theme}
+              sound={sound}
+              onThemeChange={(next) => setSiteTheme(next === "dark" ? "crimson" : "light")}
+            />
+          )}
           {/* ⌘V on the pad pastes the copied theme into the site's own switch */}
           {entry.slug === "copy-paste-pad" && (
             <CopyPastePad
